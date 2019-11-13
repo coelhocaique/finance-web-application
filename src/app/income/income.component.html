@@ -1,0 +1,65 @@
+<div class="main-content">
+  <div class="container-fluid">
+      <div class="row">           
+          <div class="col-md-12">
+              <div class="col-md-6">
+                  <div class="form-label-group">
+                      <input [(ngModel)]="search.year" type="text" id="year" class="form-control" placeholder="Year" required="required" autofocus="autofocus">       
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-label-group">
+                      <input [(ngModel)]="search.month" type="text" id="month" class="form-control" placeholder="Month">
+                  </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                    <button id="query" type="button" class="btn btn-primary btn-block" (click)="getIncomes()">Search</button>       
+                </div>
+                <div class="col-md-6">
+                        <button mat-raised-button type="button" class="btn btn-primary pull-right" [routerLink]="['/income-new']">Add +</button>       
+                    </div>
+                </div>
+              
+              <div class="card">
+                  <div class="card-header bg-dark mb-3">
+                      <h4 class="card-title text-white">Incomes</h4>
+                      <h4> <p class="card-category text-white" *ngIf="dataSource.data.length > 0"> Gross Total : {{ grossTotal | currency: "R$"  }}</p> </h4>
+                      <h4> <p class="card-category text-white" *ngIf="dataSource.data.length > 0"> Net Total : {{ netTotal | currency: "R$"  }}</p> </h4>
+                  </div> 
+                  <div class="card-body" *ngIf="dataSource.data.length > 0">
+                      <mat-form-field> 
+                              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+                      </mat-form-field>
+                  </div>
+
+                  <div class="mat-elevation-z8" *ngIf= "dataSource.data.length > 0">
+                      <mat-table #table [dataSource]="dataSource" matSort>
+                          <ng-container matColumnDef="{{column.id}}" *ngFor="let column of columnNames">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header> <strong>{{column.value}} </strong></mat-header-cell>
+                              <div *ngIf="column.id == 'additionalAmount' || column.id == 'discountAmount' || column.id == 'grossAmount' || column.id == 'netAmount'">
+                                <mat-cell *matCellDef="let element" > {{ element[column.id] | currency: "R$"}} </mat-cell>
+                              </div>
+                              <div *ngIf="column.id != 'additionalAmount' || column.id != 'discountAmount' || column.id != 'grossAmount' || column.id != 'netAmount'">
+                                 <mat-cell *matCellDef="let element"> {{element[column.id]}} </mat-cell>
+                              </div>    
+                          </ng-container>
+
+                          <ng-container matColumnDef="actions">
+                              <mat-header-cell  *matHeaderCellDef > <strong>Actions </strong></mat-header-cell>
+                              <mat-cell *matCellDef="let element" >
+                                   <button mat-icon-button (click)="openDialog(element.id)"><i class="material-icons">delete</i> Delete </button>             
+                              </mat-cell>
+                            </ng-container>
+                        
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                        </mat-table>
+                        <mat-paginator [pageSizeOptions]="[10, 20, 30, 40 , 50]" showFirstLastButtons></mat-paginator>  
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
