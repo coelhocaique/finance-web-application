@@ -3,18 +3,20 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { UserService } from  '../services/user.service'
-import { AlertService } from  '../services/alert.service'
+import { UserService } from '../_services/user.service'
+import { AlertService } from '../_services/alert.service'
 
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss']}
+    styleUrls: ['./register.component.scss']
+}
 )
 export class RegisterComponent implements OnInit {
-    registerForm: FormGroup;
+    form: FormGroup;
     loading = false;
     submitted = false;
+    private formSubmitAttempt: boolean;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -23,27 +25,33 @@ export class RegisterComponent implements OnInit {
         private alertService: AlertService) { }
 
     ngOnInit() {
-        this.registerForm = this.formBuilder.group({
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
+        this.form = this.formBuilder.group({
+            first_name: ['', Validators.required],
+            last_name: ['', Validators.required],
             username: ['', Validators.required],
-            password: ['', [Validators.required, Validators.minLength(6)]]
+            email: ['', Validators.required],
+            password: ['', [Validators.required]]
         });
     }
 
-    // convenience getter for easy access to form fields
-    get f() { return this.registerForm.controls; }
+    isFieldInvalid(field: string) {
+        return (
+            (!this.form.get(field).valid && this.form.get(field).touched) ||
+            (this.form.get(field).untouched && this.formSubmitAttempt)
+        );
+     }
 
-    onSubmit() {
+    register() {
         this.submitted = true;
 
         // stop here if form is invalid
-        if (this.registerForm.invalid) {
+        if (this.form.invalid) {
             return;
         }
 
         this.loading = true;
-        this.userService.register(this.registerForm.value)
+        this.formSubmitAttempt = true
+        this.userService.register(this.form.value)
             .pipe(first())
             .subscribe(
                 data => {

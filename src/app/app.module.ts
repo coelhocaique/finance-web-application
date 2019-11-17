@@ -3,24 +3,20 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';  
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';  
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 import { AppComponent } from './app.component';
 
-import {
-  AgmCoreModule
-} from '@agm/core';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
-import { DebtsService } from './services/debts.service';
+import { DebtsService } from './_services/debts.service';
 
-import { IncomeService } from './services/income.service';
-import { DashboardService } from './services/dashboard.service';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { AlertService } from './services/alert.service';
-import { AuthenticationService } from './services/authentication.service';
-import { UserService } from './services/user.service';
+import { IncomeService } from './_services/income.service';
+import { DashboardService } from './_services/dashboard.service';
+import { AlertService } from './_services/alert.service';
+import { AuthenticationService } from './_services/authentication.service';
+import { UserService } from './_services/user.service';
+import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
 
 @NgModule({
   imports: [
@@ -31,10 +27,7 @@ import { UserService } from './services/user.service';
     RouterModule,
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'YOUR_GOOGLE_MAPS_API_KEY'
-    })
+    ReactiveFormsModule
   ],
   declarations: [
     AppComponent,
@@ -46,7 +39,9 @@ import { UserService } from './services/user.service';
     DashboardService,
     AlertService,
     AuthenticationService,
-    UserService
+    UserService,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ContentTypeInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

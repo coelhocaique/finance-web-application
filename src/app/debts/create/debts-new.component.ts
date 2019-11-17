@@ -1,12 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DebtsService } from '../services/debts.service'
+import { DebtsService } from '../../_services/debts.service'
 import * as moment from 'moment';
-import { NotificationsComponent } from '../notifications/notifications.component'
-
-export interface CustomAttribute {    
-  property_name: string, 
-  value: string
-}
+import { NotificationsComponent } from '../../notifications/notifications.component'
+import { CustomAttribute } from 'app/_models';
 
 @Component({
   selector: 'app-debts-new',
@@ -56,6 +52,7 @@ export class DebtsNewComponent implements OnInit {
   create(){
     var debtDate = moment(this.debt.debt_date_form.toString()).format('YYYY-MM-DD')
     this.debt.debt_date = debtDate
+    
     this.debtsService.create(this.debt)
                      .subscribe(resp => {
                         this.notification.showNotification('Succesfully created!', resp.status)
