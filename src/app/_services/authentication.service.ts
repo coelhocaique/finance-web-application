@@ -24,9 +24,7 @@ export class AuthenticationService {
     login(user: string, password: string) {
         return this.userService.authenticate(user, password)
             .pipe(map(user => {
-                // login successful if there's a jwt token in the response
                 if (user && user) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
                     localStorage.setItem('current_user', JSON.stringify(user));
                     localStorage.setItem('is_logged_in', "true");
                 }
@@ -36,7 +34,6 @@ export class AuthenticationService {
     }
 
     logout() {
-        // remove user from local storage to log user out
         localStorage.removeItem('current_user');
         localStorage.removeItem('is_logged_in');
         this.currentUserSubject.next(null);

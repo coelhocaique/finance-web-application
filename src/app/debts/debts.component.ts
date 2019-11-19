@@ -5,6 +5,8 @@ import { NotificationsComponent } from '../notifications/notifications.component
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { DialogComponent } from 'app/dialog/dialog.component';
 import { DebtElement, Debt } from 'app/_models/debt';
+import { ParameterService } from 'app/_services/parameter.service';
+import { Parameter } from 'app/_models';
 
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
@@ -70,12 +72,12 @@ export class DebtsComponent implements OnInit {
 
   @Input() search = { month: 0, year: 0 };
 
-  @Input() totalAmount = 0;
+  totalAmount = 0;
 
-  @Input() debtThreshold = 2700
+  debtThreshold = 0;
 
   constructor(private debtsService: DebtsService, private notification: NotificationsComponent,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog, private parameterService: ParameterService) { }
 
   openDialog(refCode: string): void {
     const dialogRef = this.dialog.open(DialogComponent, {
@@ -109,12 +111,13 @@ export class DebtsComponent implements OnInit {
             this.dataSource.paginator = this.paginator
             this.dataSource.sort = this.sort;
             this.totalAmount = this.calculateTotalAmount(this.debts);
+            this.getThreshold()
           });
         }
       );
   }
 
-  delete(refCode) {
+  delete(refCode: string) {
     this.debtsService.delete(refCode)
       .subscribe(resp => {
         this.notification.showNotification('Succesfully deleted!', resp.status);
@@ -147,9 +150,11 @@ export class DebtsComponent implements OnInit {
     return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.amount), 0)
   }
 
-  calculateTotalAmount(debts: Debt[]) {
-    if(debts != null) return debts.reduce((summ, v) => summ += v.amount, 0)
-    else 0
+  calculateTotalAmount(debts: Debt[]) {  
+    if (debts != null && debts.length > 0) 
+      return debts.reduce((summ, v) => summ += v.amount, 0)
+    else 
+      return 0
   }
 
   parseData(debts: Debt[]): DebtElement[] {
@@ -176,8 +181,17 @@ export class DebtsComponent implements OnInit {
     return debtElements
   }
 
-  hasData(){
+  hasData() {
     return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
   }
 
+  private getThreshold() {
+    this.parameterService.find('threshold', this.search.year, this.search.month)
+      .subscribe(data => {
+        let parameters = data as Parameter[]
+        if (parameters != null && parameters.length > 0) {
+          this.debtThreshold = parameters.reduce((summ, v) => summ += parseInt(v.value), 0)
+        }
+      })
+  }
 }

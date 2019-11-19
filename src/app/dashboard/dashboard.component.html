@@ -37,7 +37,7 @@
                         <i class="material-icons">compare_arrows</i>
                     </div>
                     <p class="card-category">Savings</p>
-                    <h3 class="card-title">{{response.profits.total | currency: "R$" }}</h3>
+                    <h3 class="card-title">{{model.profits.total | currency: "R$" }}</h3>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
@@ -53,13 +53,13 @@
                           <i class="material-icons">thumb_up_alt</i>
                       </div>
                       <p class="card-category">Total Net Income</p>
-                      <h3 class="card-title">{{response.incomes.netTotal | currency: "R$" }}</h3>
+                      <h3 class="card-title">{{model.incomes.netTotal | currency: "R$" }}</h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
                         <i class="material-icons">update</i> 
                         <strong>
-                            {{response.incomes.grossTotal - response.incomes.netTotal | currency: "R$" }} paid in taxes
+                            {{model.incomes.grossTotal - model.incomes.netTotal | currency: "R$" }} paid in taxes
                         </strong>
                         </div>
                   </div>
@@ -73,7 +73,7 @@
                       </div>
                       <p class="card-category">Total Debt</p>
                       <h3 class="card-title">
-                          {{response.debts.total | currency: "R$" }}</h3>
+                          {{model.debts.total | currency: "R$" }}</h3>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
@@ -93,7 +93,7 @@
                       <h4 class="card-title">Savings last {{(search.dateTo.getMonth() - search.dateFrom.getMonth() + 1)}} months</h4>
                       <strong>
                         <p class="card-category">
-                            <span class="text-success"></span> mean of {{response.profits.mean | currency: "R$"}} per month.
+                            <span class="text-success"></span> mean of {{model.profits.mean | currency: "R$"}} per month.
                         </p>
                      </strong>
                   </div>
@@ -111,7 +111,7 @@
                   </div>
                   <div class="card-body">
                       <h4 class="card-title">Income Last {{(search.dateTo.getMonth() - search.dateFrom.getMonth() + 1)}} months</h4>
-                     <strong> <p class="card-category"> mean of {{response.incomes.netMean | currency: "R$"}} per month.</p></strong>
+                     <strong> <p class="card-category"> mean of {{model.incomes.netMean | currency: "R$"}} per month.</p></strong>
                   </div>
                   <div class="card-footer">
                       <div class="stats">
@@ -127,7 +127,7 @@
                   </div>
                   <div class="card-body">
                       <h4 class="card-title">Debts Last {{(search.dateTo.getMonth() - search.dateFrom.getMonth() + 1)}} months</h4>
-                      <strong> <p class="card-category">mean of {{response.debts.mean | currency: "R$"}} per month.</p></strong>
+                      <strong> <p class="card-category">mean of {{model.debts.mean | currency: "R$"}} per month.</p></strong>
                   </div>
                   <div class="card-footer">
                       <div class="stats">

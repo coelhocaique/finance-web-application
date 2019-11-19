@@ -29,17 +29,17 @@
                     <div class="card-header bg-dark mb-3">
                         <h4 class="card-title text-white">Incomes</h4>
                         <h4>
-                            <p class="card-category text-white" *ngIf="hasData()"> Gross
+                            <p class="card-category text-white"> Gross
                                 Total :
                                 {{ grossTotal | currency: "R$"  }}</p>
                         </h4>
                         <h4>
-                            <p class="card-category text-white" *ngIf="hasData()"> Net
+                            <p class="card-category text-white"> Net
                                 Total :
                                 {{ netTotal | currency: "R$"  }}</p>
                         </h4>
                     </div>
-                    <div class="card-body" *ngIf="dataSource.data.length > 0">
+                    <div class="card-body" *ngIf="hasData()">
                         <mat-form-field>
                             <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
                         </mat-form-field>

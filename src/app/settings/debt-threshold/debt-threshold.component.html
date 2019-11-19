@@ -1,0 +1,76 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+              <button mat-raised-button type="button" class="btn btn-primary btn-block"
+                (click)="add()">Add +</button>
+            </div>
+        </div>
+
+        <div [formGroup]="addForm">
+          <div formArrayName="inputs">
+            <div *ngFor="let controls of addForm.controls.inputs.controls; let i=index">
+              <div class="row" [formGroupName]="i">
+                <div class="col-md-4">
+                    <mat-form-field class="example-full-width">
+                      <input matInput formControlName="value" placeholder="Threshold" currencyMask
+                        [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" required>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-4">
+                  <mat-form-field class="example-full-width">
+                    <input matInput formControlName="referenceDate" placeholder="Reference Date" [matDatepicker]="picker" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+
+                <div class="col-md-2">
+                  <button mat-raised-button type="button" class="btn btn-primary pull-right"
+                    (click)="remove(i)">Remove</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <button mat-raised-button type="submit" class="btn btn-primary pull-right"
+          (click)="create()" *ngIf=hasFormData()>Submit</button>
+        </div>
+
+        <div class="card">
+          <div class="mat-elevation-z8" *ngIf="hasData()">
+            <mat-table #table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="{{column.id}}" *ngFor="let column of columnNames">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> <strong>{{column.value}} </strong>
+                </mat-header-cell>
+                <div *ngIf="column.id == 'value'">
+                  <mat-cell *matCellDef="let element"> {{ element[column.id] | currency: "R$"}}
+                  </mat-cell>
+                </div>
+                <div *ngIf="column.id != 'value'">
+                  <mat-cell *matCellDef="let element"> {{element[column.id]}} </mat-cell>
+                </div>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <button mat-icon-button (click)="openDialog(element.id)"><i class="material-icons">delete</i> Delete
+                  </button>
+                </mat-cell>
+              </ng-container>
+
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[10, 20, 30, 40 , 50]" showFirstLastButtons></mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

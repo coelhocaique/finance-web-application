@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import * as Chartist from 'chartist';
+import { Interpolation, Line, Svg } from 'chartist'
 import { DashboardService } from 'app/_services/dashboard.service';
 import { DashboardModel } from 'app/_models/dashboard';
+import { Debt, Income } from 'app/_models';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,97 +34,100 @@ export class DashboardComponent implements OnInit {
   }
 
   buildDashboard() {
-    this.model = this.dashboardService.getDashboard(this.search.dateFrom, this.search.dateTo)
+    this.dashboardService.getDashboard(this.search.dateFrom, this.search.dateTo)
+      .subscribe(data => {
+        this.model = this.dashboardService.buildModel(data[0] as Debt[], data[1] as Income[])
+        
+        let labelsDebt: string[] = []
+        let seriesDebt: string[] = []
 
-    let labelsDebt: string[] = []
-    let seriesDebt: string[] = []
+        this.model.debts.chartItems.forEach((item) => {
+          labelsDebt.push(item.xaxis)
+          seriesDebt.push(item.yaxis)
+        })
 
-    this.model.debts.chartItems.forEach((item) => {
-      labelsDebt.push(item.xaxis)
-      seriesDebt.push(item.yaxis)
-    })
+        const dataCompletedTasksChart: any = {
+          labels: labelsDebt,
+          series: [seriesDebt]
+        };
 
-    const dataCompletedTasksChart: any = {
-      labels: labelsDebt,
-      series: [seriesDebt]
-    };
-
-    const optionsCompletedTasksChart: any = {
-      lineSmooth: Chartist.Interpolation.cardinal({
-        tension: 0
-      }),
-      low: -10 + Math.min.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
-      high: 10 + Math.max.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
-      height: 250,
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 0 }
-    }
-
-    var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-    this.startAnimationForLineChart(completedTasksChart);
-
-    let labelsIncome: string[] = []
-    let seriesIncome: number[] = []
-
-    this.model.incomes.chartItems.forEach((item) => {
-      labelsIncome.push(item.xaxis)
-      seriesIncome.push(+item.yaxis)
-    })
-
-    var datawebsiteViewsChart = {
-      labels: labelsIncome,
-      series: [seriesIncome]
-    };
-    var optionswebsiteViewsChart = {
-      axisX: {
-        showGrid: false
-      },
-      low: -10 + Math.min.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
-      high: 10 + Math.max.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
-      height: 250,
-      chartPadding: { top: 0, right: 2, bottom: 0, left: 0 }
-    };
-    var responsiveOptions: any[] = [
-      ['screen and (max-width: 640px)', {
-        seriesBarDistance: 5,
-        axisX: {
-          labelInterpolationFnc: function (value) {
-            return value[0];
-          }
+        const optionsCompletedTasksChart: any = {
+          lineSmooth: Interpolation.cardinal({
+            tension: 0
+          }),
+          low: -10 + Math.min.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
+          high: 10 + Math.max.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
+          height: 250,
+          chartPadding: { top: 0, right: 0, bottom: 0, left: 0 }
         }
-      }]
-    ];
-    var websiteViewsChart = new Chartist.Line('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
 
-    this.startAnimationForLineChart(websiteViewsChart);
+        var completedTasksChart = new Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
 
-    let labelsProfit: string[] = []
-    let seriesProfit: number[] = []
+        this.startAnimationForLineChart(completedTasksChart);
 
-    this.model.profits.chartItems.forEach((item) => {
-      labelsProfit.push(item.xaxis)
-      seriesProfit.push(+item.yaxis)
-    })
+        let labelsIncome: string[] = []
+        let seriesIncome: number[] = []
 
-    const dataDailySalesChart: any = {
-      labels: labelsProfit,
-      series: [seriesProfit]
-    };
+        this.model.incomes.chartItems.forEach((item) => {
+          labelsIncome.push(item.xaxis)
+          seriesIncome.push(+item.yaxis)
+        })
 
-    const optionsDailySalesChart: any = {
-      lineSmooth: Chartist.Interpolation.cardinal({
-        tension: 0
-      }),
-      low: -10 + Math.min.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
-      high: 10 + Math.max.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
-      height: 250,
-      chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
-    }
+        var datawebsiteViewsChart = {
+          labels: labelsIncome,
+          series: [seriesIncome]
+        };
+        var optionswebsiteViewsChart = {
+          axisX: {
+            showGrid: false
+          },
+          low: -10 + Math.min.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
+          high: 10 + Math.max.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
+          height: 250,
+          chartPadding: { top: 0, right: 2, bottom: 0, left: 0 }
+        };
+        var responsiveOptions: any[] = [
+          ['screen and (max-width: 640px)', {
+            seriesBarDistance: 5,
+            axisX: {
+              labelInterpolationFnc: function (value) {
+                return value[0];
+              }
+            }
+          }]
+        ];
+        var websiteViewsChart = new Line('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
 
-    var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+        this.startAnimationForLineChart(websiteViewsChart);
 
-    this.startAnimationForLineChart(dailySalesChart);
+        let labelsProfit: string[] = []
+        let seriesProfit: number[] = []
 
+        this.model.profits.chartItems.forEach((item) => {
+          labelsProfit.push(item.xaxis)
+          seriesProfit.push(+item.yaxis)
+        })
+
+        const dataDailySalesChart: any = {
+          labels: labelsProfit,
+          series: [seriesProfit]
+        };
+
+        const optionsDailySalesChart: any = {
+          lineSmooth: Interpolation.cardinal({
+            tension: 0
+          }),
+          low: -10 + Math.min.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
+          high: 10 + Math.max.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
+          height: 250,
+          chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
+        }
+
+        var dailySalesChart = new Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+
+        this.startAnimationForLineChart(dailySalesChart);
+      }
+      )
   }
 
   startAnimationForLineChart(chart) {
@@ -140,7 +144,7 @@ export class DashboardComponent implements OnInit {
             dur: 700,
             from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
             to: data.path.clone().stringify(),
-            easing: Chartist.Svg.Easing.easeOutQuint
+            easing: Svg.Easing.easeOutQuint
           }
         });
       } else if (data.type === 'point') {

@@ -15,11 +15,9 @@ export class AdminLayoutComponent implements OnInit {
     private _router: Subscription;
     private lastPoppedUrl: string;
     private yScrollStack: number[] = [];
-    isLoggedIn: boolean
     constructor(public location: Location, private router: Router, private authService: AuthenticationService) { }
 
     ngOnInit() {
-        this.isLoggedIn = this.authService.isLoggedIn();
         const isWindows = navigator.platform.indexOf('Win') > -1 ? true : false;
 
         if (isWindows && !document.getElementsByTagName('body')[0].classList.contains('sidebar-mini')) {
@@ -48,8 +46,10 @@ export class AdminLayoutComponent implements OnInit {
             }
         });
         this._router = this.router.events.filter(event => event instanceof NavigationEnd).subscribe((event: NavigationEnd) => {
-            elemMainPanel.scrollTop = 0;
-            elemSidebar.scrollTop = 0;
+            setTimeout(() => {
+                elemMainPanel.scrollTop = 0;
+                elemSidebar.scrollTop = 0;
+            });
         });
         if (window.matchMedia(`(min-width: 960px)`).matches && !this.isMac()) {
             let ps = new PerfectScrollbar(elemMainPanel);
@@ -73,5 +73,9 @@ export class AdminLayoutComponent implements OnInit {
             bool = true;
         }
         return bool;
+    }
+
+    isLoggedIn(){
+        return this.authService.isLoggedIn();
     }
 }

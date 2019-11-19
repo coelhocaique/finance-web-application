@@ -7,16 +7,16 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 import { AppComponent } from './app.component';
-
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { DebtsService } from './_services/debts.service';
-
 import { IncomeService } from './_services/income.service';
 import { DashboardService } from './_services/dashboard.service';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
+import { ParameterService } from './_services/parameter.service';
+import { CustomAttributeService } from './_services/custom-attribute.service';
 
 @NgModule({
   imports: [
@@ -40,6 +40,8 @@ import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
     AlertService,
     AuthenticationService,
     UserService,
+    ParameterService,
+    CustomAttributeService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ContentTypeInterceptor, multi: true }
   ],

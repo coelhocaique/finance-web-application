@@ -95,7 +95,7 @@ export class IncomeComponent implements OnInit {
     this.incomeService.getIncomes(this.search.year, this.search.month)
       .subscribe(
         data => {
-          this.incomes = data
+          this.incomes = data as Income[]
           let arr: IncomeElement[] = this.parseData(this.incomes)
           this.dataSource = new MatTableDataSource(arr)
           setTimeout(() => {
@@ -147,12 +147,12 @@ export class IncomeComponent implements OnInit {
 
   calculateNetAmount(incomes: Income[]) {
     if (incomes != null) return incomes.reduce((summ, v) => summ += v.net_amount, 0)
-    else 0
+    else return 0
   }
 
   calculateGrossAmount(incomes: Income[]) {
     if (incomes != null) return incomes.reduce((summ, v) => summ += v.gross_amount, 0)
-    else 0
+    else return 0
   }
 
   parseData(incomes: Income[]): IncomeElement[] {

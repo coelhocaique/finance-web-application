@@ -20,7 +20,7 @@ export interface DebtElement {
   referenceCode: string,
   installment: string,
   description: string,
-  tag: string, 
+  tag: string,
   type: string,
   totalAmount: number,
   debtDate: string

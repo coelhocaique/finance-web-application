@@ -11,8 +11,15 @@ declare interface RouteInfo {
 export const ROUTES: RouteInfo[] = [
     { path: '/dashboard', title: 'Dashboard',  icon: 'dashboard', class: '' },
     { path: '/debts', title: 'Debts',  icon:'money_off', class: '' },
-    { path: '/incomes', title: 'Income',  icon:'attach_money', class: '' }
+    { path: '/incomes', title: 'Income',  icon:'attach_money', class: '' }, 
+    { path: '/logout', title: 'Logout',  icon:'logout', class: ''}
 ];
+
+export const SETTINGS_ROUTES: RouteInfo[] = [
+    { path: '/debt-type', title: 'Debt Type',  icon:'build', class: ''},
+    { path: '/debt-tag',   title: 'Debt Tags',  icon:'build', class: ''},
+    { path: '/debt-threshold', title: 'Debt Threshold',  icon:'build', class: ''},
+]
 
 @Component({
   selector: 'app-sidebar',
@@ -21,11 +28,13 @@ export const ROUTES: RouteInfo[] = [
 })
 export class SidebarComponent implements OnInit {
   menuItems: any[];
+  settingsItems: any[];
 
   constructor() { }
 
   ngOnInit() {
     this.menuItems = ROUTES.filter(menuItem => menuItem);
+    this.settingsItems = SETTINGS_ROUTES.filter(setting => setting)
   }
   isMobileMenu() {
       if ($(window).width() > 991) {

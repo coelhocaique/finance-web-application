@@ -24,16 +24,12 @@
                             [routerLink]="['/debt']">Add +</button>
                     </div>
                 </div>
-
-
                 <div class="card">
                     <div class="card-header bg-dark mb-3">
-                        <h4 class="card-title text-white">Debts | Threshold: {{ debtThreshold | currency: "R$"  }}</h4>
-                        <h4>
-                            <p class="card-category text-white"> Total Cost :
-                                {{ totalAmount | currency: "R$"  }} | To Spend:
-                                {{ debtThreshold - totalAmount | currency: "R$"  }}</p>
-                        </h4>
+                        <h4 class="card-title text-white">Debts</h4>
+                        <h4> <p class="card-title text-white">Total Cost : {{ totalAmount | currency: "R$"  }} </p></h4>
+                        <h4> <p class="card-title text-white"> Threshold: {{ debtThreshold | currency: "R$"  }}</p></h4>
+                        <h4> <p class="card-category text-white"> To Spend: {{ debtThreshold - totalAmount | currency: "R$"  }}</p></h4>
                     </div>
                     <div class="card-body" *ngIf="hasData()">
                         <mat-form-field>

@@ -31,7 +31,11 @@ import { IncomeComponent } from 'app/income/income.component';
 import { IncomeNewComponent } from 'app/income/create/income-new.component';
 import { LoginComponent } from 'app/login/login.component';
 import { RegisterComponent } from 'app/register/register.component';
+import { LogoutComponent } from '../../logout/logout.component';
 import { AuthGuard } from 'app/_guards';
+import { DebtTagComponent } from 'app/settings/debt-tag/debt-tag.component';
+import { DebtTypeComponent } from 'app/settings/debt-type/debt-type.component';
+import { DebtThresholdComponent } from 'app/settings/debt-threshold/debt-threshold.component';
 
 @NgModule({
   imports: [
@@ -65,10 +69,15 @@ import { AuthGuard } from 'app/_guards';
     IncomeComponent,
     IncomeNewComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    LogoutComponent,
+    DebtTagComponent,
+    DebtTypeComponent,
+    DebtThresholdComponent
   ],
   providers: [AuthGuard],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  entryComponents: [DialogComponent]
 })
 
 export class AdminLayoutModule {}

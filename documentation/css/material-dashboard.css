@@ -15044,7 +15044,7 @@ a[aria-expanded="true"] .caret,
   [class*="navbar-"] .navbar-nav > li > a:hover,
   [class*="navbar-"] .navbar-nav > li > a:focus,
   [class*="navbar-"] .navbar-nav .open .dropdown-menu > li > a,
-  [class*="navbar-"] .navbar-nav .open .dropdown-menu > li > a:hover,
+  [class*="navbar-"] .navbar-nav .open .dropdown-menu > li > a:hover
   [class*="navbar-"] .navbar-nav .open .dropdown-menu > li > a:focus {
     opacity: .7;
     background: transparent; }
