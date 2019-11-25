@@ -3,10 +3,9 @@
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-            <div class="col-md-6">
-              <button mat-raised-button type="button" class="btn btn-primary btn-block"
-                (click)="add()">Add +</button>
-            </div>
+          <div class="col-md-6">
+            <button mat-raised-button type="button" class="btn btn-primary btn-block" (click)="add()">Add +</button>
+          </div>
         </div>
 
         <div [formGroup]="addForm">
@@ -14,9 +13,9 @@
             <div *ngFor="let controls of addForm.controls.inputs.controls; let i=index">
               <div class="row" [formGroupName]="i">
                 <div class="col-md-4">
-                    <mat-form-field class="example-full-width">
-                      <input matInput formControlName="value" placeholder="Value" required>
-                    </mat-form-field>
+                  <mat-form-field class="example-full-width">
+                    <input matInput formControlName="value" placeholder="Value" required>
+                  </mat-form-field>
                 </div>
 
                 <div class="col-md-2">
@@ -28,8 +27,8 @@
             </div>
           </div>
 
-          <button mat-raised-button type="submit" class="btn btn-primary pull-right"
-          (click)="create()" *ngIf=hasFormData()>Submit</button>
+          <button mat-raised-button type="submit" class="btn btn-primary pull-right" (click)="create()"
+            *ngIf=hasFormData()>Submit</button>
         </div>
 
         <div class="card">
@@ -44,7 +43,8 @@
               <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                  <button mat-icon-button (click)="openDialog(element.custom_attribute_id)"><i class="material-icons">delete</i> Delete
+                  <button mat-icon-button title="Delete" (click)="openDialog(element.custom_attribute_id)"><i
+                      class="material-icons">delete</i>
                   </button>
                 </mat-cell>
               </ng-container>

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DebtsService } from './debts.service';
 import { IncomeService } from './income.service';
-import { Debt, DashboardModel, Chart, Income } from 'app/_models';
+import { Debt, DashboardModel, Income } from 'app/_models';
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
+import { MONTH_NAMES } from 'app/_helpers/constants'
 
 @Injectable()
 export class DashboardService {
@@ -23,65 +24,108 @@ export class DashboardService {
     return Observable.forkJoin(
       this.debtService.findByRange(fromDate, toDate),
       this.incomeService.findByRange(fromDate, toDate)
-    )
+    ).toPromise()
   }
 
-  buildModel(debts: Debt[], incomes: Income[]) {
-    let model = { debts: this.debts(debts), incomes: this.incomes(incomes) } as DashboardModel
-    return this.profits(model)
+  buildModel(debts: Debt[], incomes: Income[], months: number) {
+    let model = { debts: this.debts(debts, months), 
+                  incomes: this.incomes(incomes, months) } as DashboardModel
+
+    model.profits = this.profits(model, months)
+    return model          
   }
 
-  private debts(debts: Debt[]) {
+  private debts(debts: Debt[], len: number) {
     let totalAmount = debts.reduce((summ, v) => summ += v.amount, 0)
-    let meanAmount = totalAmount / debts.length
-    let items = []
+    let meanAmount = totalAmount / len
+    let byType = {}
+    let byTag = {}
+    let byMonth = {}
 
-    debts.forEach(d => {
-      items.push(this.buildChart(d.reference_date, d.amount.toString()))
+    debts.forEach(debt => {
+      if(byTag[debt.tag] != null){
+        byTag[debt.tag] = byTag[debt.tag] + debt.amount
+      }else{
+        byTag[debt.tag] = debt.amount
+      }
+
+      if(byType[debt.type] != null){
+        byType[debt.type] = byType[debt.type] + debt.amount
+      }else{
+        byType[debt.type] = debt.amount
+      }
+
+      if(byMonth[debt.reference_date] != null){
+        byMonth[debt.reference_date] = byMonth[debt.reference_date] + debt.amount
+      }else{
+        byMonth[debt.reference_date] = debt.amount
+      }
     })
-
-    return { total: totalAmount, mean: meanAmount, chartItems: items }
+    return { total: totalAmount, 
+            mean: meanAmount, 
+            byTag: this.getAsList(byTag), 
+            byType: this.getAsList(byType),
+            byMonth: this.getAsListMonth(byMonth)}
   }
 
-  private incomes(incomes: Income[]) {
+  private incomes(incomes: Income[], len: number) {
     let netTotal = incomes.reduce((summ, v) => summ += v.net_amount, 0)
     let grossTotal = incomes.reduce((summ, v) => summ += v.gross_amount, 0)
-    let meanNet = netTotal / incomes.length
-    let meanGross = grossTotal / incomes.length
-    let items = []
+    let meanNet = netTotal / len
+    let meanGross = grossTotal / len
+    let netByMonth = {}
+    let dicountByMonth = {}
+    let netBySourceName = {}
+    
+    incomes.forEach(income => {
+      if(netByMonth[income.reference_date] != null){
+        netByMonth[income.reference_date] = netByMonth[income.reference_date] + income.net_amount
+        dicountByMonth[income.reference_date] = dicountByMonth[income.reference_date] + income.discount_amount
+      }else{
+        netByMonth[income.reference_date] = income.net_amount
+        dicountByMonth[income.reference_date] = income.discount_amount
+      }
 
-    incomes.forEach(d => {
-      items.push(this.buildChart(d.reference_date, d.net_amount.toString()))
+      if(netBySourceName[income.source_name] != null){
+        netBySourceName[income.source_name] = netBySourceName[income.source_name] + income.net_amount
+      }else{
+        netBySourceName[income.source_name] = income.net_amount
+      }
     })
-
-    return { netTotal: netTotal, netMean: meanNet, grossTotal: grossTotal, grossMean: meanGross, chartItems: items }
+    return { netTotal: netTotal, 
+            netMean: meanNet, 
+            grossTotal: grossTotal, 
+            grossMean: meanGross,
+            netByMonth : this.getAsListMonth(netByMonth),
+            dicountByMonth : this.getAsListMonth(dicountByMonth),
+            netBySourceName : this.getAsList(netBySourceName)}
   }
 
-  private profits(model: DashboardModel): DashboardModel {
+  private profits(model: DashboardModel, len: number) {
     let debts = model.debts
     let incomes = model.incomes
     let total = incomes.netTotal - debts.total
-    let dchart = debts.chartItems
-    let ichart = incomes.chartItems
-
-    let mean = total / Math.max(dchart.length, ichart.length)
-    let items = []
-    let ddict = {}
-
-
-    // dchart.forEach (d => { 
-    //   let date = d.xaxys
-    //   let value = parseInt(d.yaxis)
-
-
-    //   items.push(this.buildChart(d.reference_date, d.net_amount.toString()))
-    // })
-
-    model.profits = { total: total, mean: mean, chartItems: items }
-    return model
+    let mean = total / len
+    return { total: total, mean: mean}
   }
 
-  private buildChart(x: string, y: string) {
-    return { xaxis: x, yaxis: y } as Chart
+  private getAsListMonth(dict: {}){
+    let l = []
+     Object.keys(dict).forEach(function(key) {
+      let k = parseInt(key.toString().substring(4, 6))
+      let m = key.toString().substring(2, 4)
+      l.push({ y: dict[key], name: MONTH_NAMES[k - 1] + "/" + m })
+     })
+
+     return l
+  }
+
+  private getAsList(dict: {}) {
+    let l = []
+    Object.keys(dict).forEach(function(key) {
+      l.push({ y: dict[key], name: key })
+     })
+
+     return l
   }
 }

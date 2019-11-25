@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { IncomeService } from 'app/_services/income.service';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { DebtsService } from 'app/_services/debts.service';
+import {MONTH_NAMES} from "app/_helpers/constants"
 
 @Component({
   selector: 'app-income-new',
@@ -15,7 +16,7 @@ export class IncomeNewComponent implements OnInit {
 
   addForm: FormGroup;
 
-  monthNames: string[] = DebtsService.monthNames
+  monthNames: string[] = MONTH_NAMES
   
   @Input() 
   income = {

@@ -7,9 +7,6 @@ export class DebtsService {
 
   private baseUrl = URL_FINANCE_SERVICE + '/v1'
 
-  public static monthNames = ["January", "February", "March", "April", "May", "June", "July",
-    "August", "September", "October", "November", "December"
-  ];
   constructor(private http: HttpClient) { }
 
   getDebts(year: number, month: number) {

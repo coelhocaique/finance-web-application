@@ -3,6 +3,7 @@ import { DebtsService } from '../../_services/debts.service'
 import * as moment from 'moment';
 import { NotificationsComponent } from '../../notifications/notifications.component'
 import { CustomAttribute } from 'app/_models';
+import { MONTH_NAMES } from "app/_helpers/constants"
 
 @Component({
   selector: 'app-debts-new',
@@ -15,7 +16,7 @@ export class DebtsNewComponent implements OnInit {
   tags: string[];
   types: string[];
 
-  monthNames: string[] = DebtsService.monthNames
+  monthNames: string[] = MONTH_NAMES
   days: number[]
 
   @Input() 
@@ -66,5 +67,7 @@ export class DebtsNewComponent implements OnInit {
     this.debt.installments = 1
     this.debt.next_month = false,
     this.debt.debt_date_form = new Date()
+    this.debt.tag = ''
+    this.debt.type = ''
   }
 }

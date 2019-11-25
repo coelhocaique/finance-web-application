@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Interpolation, Line, Svg } from 'chartist'
 import { DashboardService } from 'app/_services/dashboard.service';
 import { DashboardModel } from 'app/_models/dashboard';
 import { Debt, Income } from 'app/_models';
+import * as CanvasJS from 'app/_lib/canvasjs.min';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,157 +34,46 @@ export class DashboardComponent implements OnInit {
     this.search.dateTo = d;
   }
 
-  buildDashboard() {
-    this.dashboardService.getDashboard(this.search.dateFrom, this.search.dateTo)
-      .subscribe(data => {
-        this.model = this.dashboardService.buildModel(data[0] as Debt[], data[1] as Income[])
-        
-        let labelsDebt: string[] = []
-        let seriesDebt: string[] = []
-
-        this.model.debts.chartItems.forEach((item) => {
-          labelsDebt.push(item.xaxis)
-          seriesDebt.push(item.yaxis)
+  async buildDashboard() {
+    var fromDate = this.search.dateFrom
+    var toDate = this.search.dateTo
+    var months = this.getDiffInMonths(fromDate, toDate) + 1
+    await this.dashboardService.getDashboard(fromDate, toDate)
+      .then(data => {
+        setTimeout(() => {
+          this.model = this.dashboardService.buildModel(data[0] as Debt[],
+            data[1] as Income[],
+            months)
+          this.initPieChart('debtByTag', 'Debts by Tag', this.model.debts.byTag)
+          this.initPieChart('debtByType', 'Debts by Type', this.model.debts.byType)
+          this.initPieChart('debtByMonth', 'Debts by Month', this.model.debts.byMonth)
+          this.initPieChart('incomeNetByMonth', 'Net Income by Month', this.model.incomes.netByMonth)
+          this.initPieChart('incomeDiscountByMonth', 'Income Discount by Month', this.model.incomes.dicountByMonth)
+          this.initPieChart('incomeBySourceName', 'Net Income by Source Name', this.model.incomes.netBySourceName)
         })
-
-        const dataCompletedTasksChart: any = {
-          labels: labelsDebt,
-          series: [seriesDebt]
-        };
-
-        const optionsCompletedTasksChart: any = {
-          lineSmooth: Interpolation.cardinal({
-            tension: 0
-          }),
-          low: -10 + Math.min.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
-          high: 10 + Math.max.apply(Math, this.model.debts.chartItems.map(function (o) { return o.yaxis; })),
-          height: 250,
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0 }
-        }
-
-        var completedTasksChart = new Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
-
-        this.startAnimationForLineChart(completedTasksChart);
-
-        let labelsIncome: string[] = []
-        let seriesIncome: number[] = []
-
-        this.model.incomes.chartItems.forEach((item) => {
-          labelsIncome.push(item.xaxis)
-          seriesIncome.push(+item.yaxis)
-        })
-
-        var datawebsiteViewsChart = {
-          labels: labelsIncome,
-          series: [seriesIncome]
-        };
-        var optionswebsiteViewsChart = {
-          axisX: {
-            showGrid: false
-          },
-          low: -10 + Math.min.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
-          high: 10 + Math.max.apply(Math, this.model.incomes.chartItems.map(function (o) { return o.yaxis; })),
-          height: 250,
-          chartPadding: { top: 0, right: 2, bottom: 0, left: 0 }
-        };
-        var responsiveOptions: any[] = [
-          ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
-            }
-          }]
-        ];
-        var websiteViewsChart = new Line('#websiteViewsChart', datawebsiteViewsChart, optionswebsiteViewsChart, responsiveOptions);
-
-        this.startAnimationForLineChart(websiteViewsChart);
-
-        let labelsProfit: string[] = []
-        let seriesProfit: number[] = []
-
-        this.model.profits.chartItems.forEach((item) => {
-          labelsProfit.push(item.xaxis)
-          seriesProfit.push(+item.yaxis)
-        })
-
-        const dataDailySalesChart: any = {
-          labels: labelsProfit,
-          series: [seriesProfit]
-        };
-
-        const optionsDailySalesChart: any = {
-          lineSmooth: Interpolation.cardinal({
-            tension: 0
-          }),
-          low: -10 + Math.min.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
-          high: 10 + Math.max.apply(Math, this.model.profits.chartItems.map(function (o) { return o.yaxis; })),
-          height: 250,
-          chartPadding: { top: 0, right: 0, bottom: 0, left: 0 },
-        }
-
-        var dailySalesChart = new Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-        this.startAnimationForLineChart(dailySalesChart);
-      }
-      )
+      })
   }
 
-  startAnimationForLineChart(chart) {
-    let seq: any, delays: any, durations: any;
-    seq = 0;
-    delays = 80;
-    durations = 500;
+  private getDiffInMonths(date1: Date, date2: Date) {
+    return moment(date2).diff(moment(date1), 'months', false)
+  }
 
-    chart.on('draw', function (data) {
-      if (data.type === 'line' || data.type === 'area') {
-        data.element.animate({
-          d: {
-            begin: 600,
-            dur: 700,
-            from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
-            to: data.path.clone().stringify(),
-            easing: Svg.Easing.easeOutQuint
-          }
-        });
-      } else if (data.type === 'point') {
-        seq++;
-        data.element.animate({
-          opacity: {
-            begin: seq * delays,
-            dur: durations,
-            from: 0,
-            to: 1,
-            easing: 'ease'
-          }
-        });
-      }
+  private initPieChart(name: string, text: string, data) {
+    let chart = new CanvasJS.Chart(name, {
+      theme: "light2",
+      animationEnabled: true,
+      title: {
+        text: text
+      },
+      data: [{
+        type: "pie",
+        showInLegend: false,
+        toolTipContent: "<b>{name}</b>: R${y} (#percent%)",
+        indexLabel: "{name} - #percent%",
+        dataPoints: data
+      }]
     });
 
-    seq = 0;
-  };
-  startAnimationForBarChart(chart) {
-    let seq2: any, delays2: any, durations2: any;
-
-    seq2 = 0;
-    delays2 = 80;
-    durations2 = 500;
-    chart.on('draw', function (data) {
-      if (data.type === 'bar') {
-        seq2++;
-        data.element.animate({
-          opacity: {
-            begin: seq2 * delays2,
-            dur: durations2,
-            from: 0,
-            to: 1,
-            easing: 'ease'
-          }
-        });
-      }
-    });
-
-    seq2 = 0;
+    chart.render()
   }
 }

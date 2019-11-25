@@ -64,8 +64,8 @@
                             <ng-container matColumnDef="actions">
                                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    <button mat-icon-button (click)="openDialog(element.id)"><i
-                                            class="material-icons">delete</i> Delete </button>
+                                    <button mat-icon-button title="Delete" (click)="openDialog(element.id)"><i
+                                            class="material-icons">delete</i></button>
                                 </mat-cell>
                             </ng-container>
 

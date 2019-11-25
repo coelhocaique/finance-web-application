@@ -2,23 +2,21 @@ export interface DashboardModel {
   debts: {
     total: number,
     mean: number,
-    chartItems: Chart[]
+    byTag,
+    byType,
+    byMonth
   }
   incomes: {
     netTotal: number,
     netMean: number,
     grossTotal: number,
     grossMean: number,
-    chartItems: Chart[]
+    netByMonth,
+    dicountByMonth,
+    netBySourceName
   }
   profits: {
     total: number,
-    mean: number,
-    chartItems: Chart[]
+    mean: number
   }
-}
-
-export interface Chart {
-  xaxis: string
-  yaxis: string
 }

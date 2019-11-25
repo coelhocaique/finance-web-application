@@ -6,6 +6,7 @@ import { Parameter, ParameterElement } from 'app/_models/parameter';
 import { DebtsService } from 'app/_services/debts.service';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { DialogComponent } from 'app/dialog/dialog.component';
+import {MONTH_NAMES} from "app/_helpers/constants"
 
 const DISPLAYED_COLUMNS: Array<string> = ['value',
   'referenceDate',
@@ -158,6 +159,6 @@ export class DebtThresholdComponent implements OnInit {
   private formatReferenceDate(referenceDate: string) {
     var year = referenceDate.substring(0, 4)
     var month = parseInt(referenceDate.substring(4, 6))
-    return DebtsService.monthNames[month - 1] + '-' + year
+    return MONTH_NAMES[month - 1] + '-' + year
   }
 }

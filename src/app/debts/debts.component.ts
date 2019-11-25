@@ -11,10 +11,10 @@ import { Parameter } from 'app/_models';
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
   'installment',
-  'debtDate',
-  'type',
-  'tag',
-  'totalAmount',
+  // 'debtDate',
+  // 'type',
+  // 'tag',
+  // 'totalAmount',
   'actions'];
 
 const COLUMN_NAMES = [

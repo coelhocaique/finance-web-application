@@ -6,19 +6,21 @@ import { DialogComponent } from 'app/dialog/dialog.component';
 import { IncomeService } from 'app/_services/income.service';
 import { DebtsService } from 'app/_services/debts.service';
 import { Income, IncomeElement } from "../_models"
+import {MONTH_NAMES} from "app/_helpers/constants"
 
 
-const DISPLAYED_COLUMNS: Array<string> = ['description',
-  'grossAmount',
+const DISPLAYED_COLUMNS: Array<string> = [
   'netAmount',
-  'referenceDate',
-  'discountAmount',
-  'additionalAmount',
+  'description',
+  // 'grossAmount',
+  // 'referenceDate',
+  // 'discountAmount',
+  // 'additionalAmount',
   'actions'];
 
 const COLUMN_NAMES = [{
   id: "description",
-  value: "Description."
+  value: "Description"
 
 }, {
   id: "grossAmount",
@@ -176,7 +178,7 @@ export class IncomeComponent implements OnInit {
   private formatReferenceDate(referenceDate: string) {
     var year = referenceDate.substring(0, 4)
     var month = parseInt(referenceDate.substring(4, 6))
-    return DebtsService.monthNames[month - 1] + '-' + year
+    return MONTH_NAMES[month - 1] + '-' + year
   }
 
   hasData(){
