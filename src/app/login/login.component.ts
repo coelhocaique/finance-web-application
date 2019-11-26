@@ -4,11 +4,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Router } from '@angular/router';
 import { AlertService } from 'app/_services/alert.service';
+import { NotificationsComponent } from 'app/notifications/notifications.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  providers: [NotificationsComponent]
 })
 export class LoginComponent implements OnInit {
   form: FormGroup;
@@ -19,14 +21,12 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private router: Router,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private notification: NotificationsComponent
   ) { }
 
   ngOnInit() {
-    this.form = this.fb.group({
-      userName: ['', Validators.required],
-      password: ['', Validators.required]
-    });
+    this.initForm()
   }
 
   isFieldInvalid(field: string) {
@@ -45,10 +45,18 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['']);
           },
           error => {
-            this.alertService.error(error);
+            this.loading = false;
+            this.notification.showNotification('Incorrect user or password!', error.status)
+            this.form.reset()
           });
 
     }
     this.formSubmitAttempt = true;
+  }
+  private initForm(){
+    this.form = this.fb.group({
+      userName: ['', Validators.required],
+      password: ['', Validators.required]
+    });
   }
 }

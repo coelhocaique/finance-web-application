@@ -5,11 +5,13 @@ import { first } from 'rxjs/operators';
 
 import { UserService } from '../_services/user.service'
 import { AlertService } from '../_services/alert.service'
+import { NotificationsComponent } from 'app/notifications/notifications.component';
 
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss']
+    styleUrls: ['./register.component.scss'],
+    providers: [NotificationsComponent]
 }
 )
 export class RegisterComponent implements OnInit {
@@ -22,7 +24,8 @@ export class RegisterComponent implements OnInit {
         private formBuilder: FormBuilder,
         private router: Router,
         private userService: UserService,
-        private alertService: AlertService) { }
+        private alertService: AlertService,
+        private notification: NotificationsComponent) { }
 
     ngOnInit() {
         this.form = this.formBuilder.group({
@@ -59,7 +62,8 @@ export class RegisterComponent implements OnInit {
                     this.router.navigate(['/login']);
                 },
                 error => {
-                    this.alertService.error(error);
+                    
+                    this.notification.showNotification('An user with this email or usename already exists!', error.status)
                     this.loading = false;
                 });
     }

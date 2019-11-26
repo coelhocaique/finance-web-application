@@ -12,6 +12,8 @@ export class NotificationsComponent implements OnInit {
   showNotification(message, status){
       if(status >= 200 && status < 400){
         this.show(2, message)
+      }else if(status >= 400 && status < 500){
+        this.show(4, message)
       }else{
         this.show(4, 'We had an error, please try again!')
       }
@@ -25,7 +27,7 @@ export class NotificationsComponent implements OnInit {
           message: message
       },{
           type: type[color],
-          timer: 10,
+          timer: 20,
           delay: 2000,
           placement: {
               from: 'top',
