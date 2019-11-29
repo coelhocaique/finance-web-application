@@ -1,5 +1,6 @@
 <div class="main-content">
-  <div class="container-fluid">
+  <mat-spinner style="margin:0 auto;" *ngIf="!loaded"></mat-spinner>
+  <div class="container-fluid" *ngIf="loaded">
     <div class="row">
       <div class="col-md-12">
         <div class="row">

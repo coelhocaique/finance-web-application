@@ -5,7 +5,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminLayoutRoutes } from './admin-layout.routing';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { UserProfileComponent } from '../../user-profile/user-profile.component';
-import { IconsComponent } from '../../icons/icons.component';
 import { NotificationsComponent } from '../../notifications/notifications.component';
 import { DebtsComponent } from '../../debts/debts.component';
 import { DebtsNewComponent } from '../../debts/create/debts-new.component';
@@ -14,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { CurrencyMaskModule } from "ng2-currency-mask";
 import { MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule} from '@angular/material/paginator';
-import { MatDialogModule, MatNativeDateModule} from "@angular/material";
+import { MatDialogModule, MatNativeDateModule, MatProgressSpinnerModule} from "@angular/material";
 import { DialogComponent } from '../../dialog/dialog.component';
 import { MatDatepickerModule} from '@angular/material/datepicker';
 
@@ -56,12 +55,12 @@ import { DebtThresholdComponent } from 'app/settings/debt-threshold/debt-thresho
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatProgressSpinnerModule
   ],
   declarations: [
     DashboardComponent,
     UserProfileComponent,
-    IconsComponent,
     NotificationsComponent,
     DebtsComponent,
     DebtsNewComponent,

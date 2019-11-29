@@ -1,35 +1,116 @@
 <div class="main-content">
-    <div class="container-fluid">
+    <mat-spinner style="margin:0 auto;" *ngIf="!loaded"></mat-spinner>
+    <div class="container-fluid" *ngIf="loaded">
+        <div class="row">
+            <div class="col-md-10">
+                <div [formGroup]="newDebtForm" *ngIf="showForm">
+                    <div class="card">
+                        <div class="card-header bg-dark mb-3">
+                            <h4 class="card-title text-white">Create new Debt</h4>
+                            <p class="card-category text-white">Fill the fields to create new debt</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="amount" placeholder="Total Cost" type="text"
+                                            name=amount currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                            required>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-2">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="installments" type="number" placeholder="Installments"
+                                            name="installments" required>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="description" placeholder="Description" name="description"
+                                            required>
+                                    </mat-form-field>
+                                </div>
+                               
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-2">
+                                    <mat-form-field>
+                                        <input matInput formControlName="debt_date" [matDatepicker]="picker"
+                                            placeholder="Debt Date" name="debt_date" required>
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <mat-form-field>
+                                        <mat-select formControlName="type" name="type" required placeholder="Type">
+                                            <mat-option *ngFor="let t of types" [value]="t">
+                                                {{ t }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <mat-form-field>
+                                        <mat-select formControlName="tag" name="tag" required placeholder="Tag">
+                                            <mat-option *ngFor="let t of tags" [value]="t">
+                                                {{ t }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-2 custom-control custom-checkbox">
+                                    <mat-checkbox color="primary" formControlName="next_month" name="next_month">Next
+                                            Month</mat-checkbox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button mat-raised-button type="submit" class="btn btn-primary pull-right" [disabled]="!newDebtForm.valid" (click)="create()">Submit</button>
+
+                    <button mat-raised-button type="button" class="btn btn-primary pull-right" (click)="cancel()">Cancel</button>
+                </div>
+            </div>
+        </div> <br/><br/>
         <div class="row">
             <div class="col-md-12">
-                <div class="col-md-6">
-                    <div class="form-label-group">
-                        <input [(ngModel)]="search.year" type="text" id="year" class="form-control" placeholder="Year"
-                            required="required" autofocus="autofocus">
+                <div class="row" *ngIf="!showForm">
+                    <div class="col-md-2">
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="search.year" type="number" placeholder="Year" name="year"
+                                required>
+                        </mat-form-field>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-label-group">
-                        <input [(ngModel)]="search.month" type="text" id="month" class="form-control"
-                            placeholder="Month">
+                    <div class="col-md-2">
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="search.month" type="number" placeholder="Month" name="month"
+                                required>
+                        </mat-form-field>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <button id="query" type="button" class="btn btn-primary btn-block"
-                            (click)="getDebts()">Search</button>
+                    <div class="col-md-2">
+                        <button id="query" type="button" class="btn btn-primary btn-block" (click)="getDebts()">Search</button>
                     </div>
-                    <div class="col-md-6">
-                        <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                            [routerLink]="['/debt']">Add +</button>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-block" (click)="initForm()">Create New Debt</button>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-header bg-dark mb-3">
                         <h4 class="card-title text-white">Debts</h4>
-                        <h4> <p class="card-title text-white">Total Cost : {{ totalAmount | currency: "R$"  }} </p></h4>
-                        <h4> <p class="card-title text-white"> Threshold: {{ debtThreshold | currency: "R$"  }}</p></h4>
-                        <h4> <p class="card-category text-white"> To Spend: {{ debtThreshold - totalAmount | currency: "R$"  }}</p></h4>
+                        <h4>
+                            <p class="card-title text-white">Total Cost : {{ totalAmount | currency: "R$" }} </p>
+                        </h4>
+                        <h4>
+                            <p class="card-title text-white"> Threshold: {{ debtThreshold | currency: "R$" }}</p>
+                        </h4>
+                        <h4>
+                            <p class="card-category text-white"> To Spend: {{ debtThreshold - totalAmount | currency:
+                                "R$" }}</p>
+                        </h4>
                     </div>
                     <div class="card-body" *ngIf="hasData()">
                         <mat-form-field>

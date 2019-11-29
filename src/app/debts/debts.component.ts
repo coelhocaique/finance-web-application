@@ -6,7 +6,9 @@ import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/m
 import { DialogComponent } from 'app/dialog/dialog.component';
 import { DebtElement, Debt } from 'app/_models/debt';
 import { ParameterService } from 'app/_services/parameter.service';
-import { Parameter } from 'app/_models';
+import { Parameter, CustomAttribute } from 'app/_models';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import * as moment from 'moment';
 
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
@@ -61,6 +63,8 @@ export class DebtsComponent implements OnInit {
 
   debts: Debt[];
 
+  newDebtForm: FormGroup
+
   dataSource;
 
   displayedColumns = DISPLAYED_COLUMNS
@@ -72,12 +76,22 @@ export class DebtsComponent implements OnInit {
 
   @Input() search = { month: 0, year: 0 };
 
+  @Input() loaded = false
+  @Input() showForm = false
   totalAmount = 0;
 
   debtThreshold = 0;
 
-  constructor(private debtsService: DebtsService, private notification: NotificationsComponent,
-    private dialog: MatDialog, private parameterService: ParameterService) { }
+  tags: string[];
+  types: string[];
+
+  constructor(
+    private debtsService: DebtsService, 
+    private notification: NotificationsComponent,
+    private dialog: MatDialog, 
+    private parameterService: ParameterService,
+    private formBuilder: FormBuilder
+  ) { }
 
   openDialog(refCode: string): void {
     const dialogRef = this.dialog.open(DialogComponent, {
@@ -101,9 +115,11 @@ export class DebtsComponent implements OnInit {
   }
 
   getDebts() {
+    this.showForm = false
     this.debtsService.getDebts(this.search.year, this.search.month)
       .subscribe(
         data => {
+          this.loaded = true
           this.debts = data as Debt[]
           let arr: DebtElement[] = this.parseData(this.debts)
           this.dataSource = new MatTableDataSource(arr)
@@ -123,8 +139,7 @@ export class DebtsComponent implements OnInit {
         this.notification.showNotification('Succesfully deleted!', resp.status);
         if (resp.status >= 200 && resp.status < 400) {
           setTimeout(() => {
-            let element: HTMLElement = document.getElementById('query') as HTMLElement
-            element.click()
+            this.clickOnSearch()
           }, 100)
         }
       });
@@ -185,6 +200,52 @@ export class DebtsComponent implements OnInit {
     return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
   }
 
+  initForm(){
+    this.showForm = true
+    this.debtsService.getTypes()
+                     .subscribe(
+                        data => {
+                          var response = data as CustomAttribute[]
+                          this.types = response.map(t => t.value) as Array<string>
+                        });
+
+    this.debtsService.getTags()
+                     .subscribe(
+                          data => {
+                          var response = data as CustomAttribute[]
+                          this.tags = response.map(t => t.value) as Array<string>
+                        });
+   
+    this.newDebtForm = this.formBuilder.group({
+      amount: ['', Validators.required],
+      description: ['', Validators.required],
+      installments: [1, Validators.required],
+      next_month: [false, Validators.required],
+      debt_date: [new Date(), Validators.required],
+      type: ['', Validators.required],
+      tag: ['', Validators.required],
+    });   
+  }
+
+  cancel(){
+    this.showForm = false
+    this.newDebtForm.reset()
+  }
+
+  create(){
+    if (this.newDebtForm.valid){
+      let debt = this.newDebtForm.value
+      debt.debt_date = moment(debt.debt_date).format('YYYY-MM-DD')
+      
+      this.debtsService.create(debt)
+                      .subscribe(resp => {
+                          this.notification.showNotification('Succesfully created!', resp.status)
+                          this.newDebtForm.reset()
+                          this.clickOnSearch()
+                      });
+    }
+  }
+  
   private getThreshold() {
     this.parameterService.find('threshold', this.search.year, this.search.month)
       .subscribe(data => {
@@ -193,5 +254,10 @@ export class DebtsComponent implements OnInit {
           this.debtThreshold = parameters.reduce((summ, v) => summ += parseInt(v.value), 0)
         }
       })
+  }
+
+  private clickOnSearch(){
+    let element: HTMLElement = document.getElementById('query') as HTMLElement
+    element.click()
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormArray, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { DialogComponent } from 'app/dialog/dialog.component';
@@ -33,6 +33,8 @@ export class DebtTagComponent implements OnInit {
 
   columnNames = COLUMN_NAMES
   
+  @Input() loaded = false
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -74,6 +76,7 @@ export class DebtTagComponent implements OnInit {
   getParameters(){
     this.customAttributeService.findByPropertyName('debt_tag')
       .subscribe(data => {
+        this.loaded = true
         this.customAttribute = data
           this.dataSource = new MatTableDataSource(this.customAttribute)
           setTimeout(() => {

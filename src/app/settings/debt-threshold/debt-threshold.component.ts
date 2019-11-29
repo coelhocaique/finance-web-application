@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { ParameterService } from 'app/_services/parameter.service';
@@ -43,6 +43,8 @@ export class DebtThresholdComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  @Input() loaded = false
+
   constructor(private formBuilder: FormBuilder, 
     private parameterService: ParameterService,
     private notification: NotificationsComponent,
@@ -82,6 +84,7 @@ export class DebtThresholdComponent implements OnInit {
   getParameters(){
     this.parameterService.findByName('threshold')
       .subscribe(data => {
+        this.loaded = true
         this.parameters = data
           let arr: ParameterElement[] = this.parseData(this.parameters)
           this.dataSource = new MatTableDataSource(arr)

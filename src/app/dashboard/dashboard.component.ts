@@ -14,6 +14,8 @@ export class DashboardComponent implements OnInit {
 
   model: DashboardModel
 
+  @Input() loaded = false
+
   @Input()
   search = {
     dateFrom: new Date(),
@@ -34,16 +36,17 @@ export class DashboardComponent implements OnInit {
     this.search.dateTo = d;
   }
 
-  async buildDashboard() {
+  buildDashboard() {
     var fromDate = this.search.dateFrom
     var toDate = this.search.dateTo
     var months = this.getDiffInMonths(fromDate, toDate) + 1
-    await this.dashboardService.getDashboard(fromDate, toDate)
+    this.dashboardService.getDashboard(fromDate, toDate)
       .then(data => {
+        this.loaded = true;
         setTimeout(() => {
           this.model = this.dashboardService.buildModel(data[0] as Debt[],
             data[1] as Income[],
-            months)
+            months)   
           this.initPieChart('debtByTag', 'Debts by Tag', this.model.debts.byTag)
           this.initPieChart('debtByType', 'Debts by Type', this.model.debts.byType)
           this.initPieChart('debtByMonth', 'Debts by Month', this.model.debts.byMonth)

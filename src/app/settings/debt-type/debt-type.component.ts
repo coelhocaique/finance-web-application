@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormArray, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { DialogComponent } from 'app/dialog/dialog.component';
@@ -35,6 +35,8 @@ export class DebtTypeComponent implements OnInit {
   
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  @Input() loaded = false
 
   constructor(private formBuilder: FormBuilder, 
     private customAttributeService: CustomAttributeService,
@@ -74,6 +76,7 @@ export class DebtTypeComponent implements OnInit {
   getParameters(){
     this.customAttributeService.findByPropertyName('debt_type')
       .subscribe(data => {
+        this.loaded = true
         this.customAttribute = data
           this.dataSource = new MatTableDataSource(this.customAttribute)
           setTimeout(() => {

@@ -67,6 +67,8 @@ export class IncomeComponent implements OnInit {
   @Input() netTotal = 0;
   @Input() grossTotal = 0;
 
+  @Input() loaded = false;
+
   constructor(private incomeService: IncomeService, private notification: NotificationsComponent,
     private dialog: MatDialog) {
 
@@ -97,6 +99,7 @@ export class IncomeComponent implements OnInit {
     this.incomeService.getIncomes(this.search.year, this.search.month)
       .subscribe(
         data => {
+          this.loaded = true;
           this.incomes = data as Income[]
           let arr: IncomeElement[] = this.parseData(this.incomes)
           this.dataSource = new MatTableDataSource(arr)
