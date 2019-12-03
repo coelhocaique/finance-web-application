@@ -11,7 +11,6 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
 import { DebtsService } from './_services/debts.service';
 import { IncomeService } from './_services/income.service';
 import { DashboardService } from './_services/dashboard.service';
-import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
@@ -37,7 +36,6 @@ import { CustomAttributeService } from './_services/custom-attribute.service';
     DebtsService,
     IncomeService,
     DashboardService,
-    AlertService,
     AuthenticationService,
     UserService,
     ParameterService,

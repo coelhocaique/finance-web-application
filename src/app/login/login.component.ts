@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { AuthenticationService } from '../_services/authentication.service';
 import { Router } from '@angular/router';
-import { AlertService } from 'app/_services/alert.service';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 
 @Component({
@@ -21,7 +20,6 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private router: Router,
-    private alertService: AlertService,
     private notification: NotificationsComponent
   ) { }
 

@@ -1,13 +1,12 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { Observable } from 'rxjs';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { DialogComponent } from 'app/dialog/dialog.component';
 import { IncomeService } from 'app/_services/income.service';
-import { DebtsService } from 'app/_services/debts.service';
 import { Income, IncomeElement } from "../_models"
-import {MONTH_NAMES} from "app/_helpers/constants"
-
+import { MONTH_NAMES } from "app/_helpers/constants"
+import { FormGroup, Validators, FormBuilder, FormArray } from '@angular/forms';
+import * as moment from 'moment';
 
 const DISPLAYED_COLUMNS: Array<string> = [
   'netAmount',
@@ -53,6 +52,8 @@ export class IncomeComponent implements OnInit {
 
   incomes: Income[];
 
+  newIncomeForm: FormGroup
+
   dataSource;
 
   displayedColumns = DISPLAYED_COLUMNS
@@ -62,33 +63,19 @@ export class IncomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  @Input() search = { month: '', year: 0 };
+  @Input() search = { month: null, year: 0 };
 
   @Input() netTotal = 0;
   @Input() grossTotal = 0;
 
   @Input() loaded = false;
+  @Input() showForm = false
 
-  constructor(private incomeService: IncomeService, private notification: NotificationsComponent,
-    private dialog: MatDialog) {
-
-  }
-
-  openDialog(id: string): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '250px',
-      data: {
-        title: "Delete Income",
-        message: "Are you sure you want to delete this income?"
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.delete(id)
-      }
-    });
-  }
+  constructor(
+    private incomeService: IncomeService,
+    private notification: NotificationsComponent,
+    private dialog: MatDialog,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
     this.setDate()
@@ -113,22 +100,28 @@ export class IncomeComponent implements OnInit {
       );
   }
 
-  delete(id: string) {
-    this.incomeService.delete(id)
-      .subscribe(resp => {
-        this.notification.showNotification('Succesfully deleted!', resp.status);
-        if (resp.status >= 200 && resp.status < 400) {
-          setTimeout(() => {
-            let element: HTMLElement = document.getElementById('query') as HTMLElement
-            element.click()
-          }, 100)
-        }
-      });
-  }
+  delete(id: string): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+      data: {
+        title: "Delete Income",
+        message: "Are you sure you want to delete this income?"
+      }
+    });
 
-  setDate() {
-    let today = new Date()
-    this.search.year = today.getFullYear()
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.incomeService.delete(id)
+          .subscribe(resp => {
+            this.notification.showNotification('Succesfully deleted!', resp.status);
+            if (resp.status >= 200 && resp.status < 400) {
+              setTimeout(() => {
+                this.getIncomes()
+              }, 100)
+            }
+          });
+      }
+    });
   }
 
   applyFilter(filterValue: string) {
@@ -142,25 +135,81 @@ export class IncomeComponent implements OnInit {
     }
   }
 
-  filterNetAmount() {
-    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.netAmount), 0)
+  hasData() {
+    return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
   }
 
-  filterGrossAmount() {
-    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.grossAmount), 0)
+  initForm() {
+    this.showForm = true
+    this.newIncomeForm = this.formBuilder.group({
+      gross_amount: ['', Validators.required],
+      description: ['', Validators.required],
+      source_name: ['', Validators.required],
+      next_month: [false, Validators.required],
+      reference_date: [new Date(), Validators.required],
+      receipt_date: [new Date(), Validators.required],
+      discounts: this.formBuilder.array([]),
+      additions: this.formBuilder.array([]),
+    });
   }
 
-  calculateNetAmount(incomes: Income[]) {
-    if (incomes != null) return incomes.reduce((summ, v) => summ += v.net_amount, 0)
-    else return 0
+  create() {
+    if (this.newIncomeForm.valid) {
+      let income = this.newIncomeForm.value
+      income.reference_date = moment(income.reference_date).format('YYYYMM')
+      income.receipt_date = moment(income.receipt_date).format('YYYY-MM-DD')
+
+      this.incomeService.create(income)
+        .subscribe(resp => {
+          this.notification.showNotification('Succesfully created!', resp.status)
+          this.newIncomeForm.reset()
+          setTimeout(() => {
+            this.getIncomes()
+          }, 100);
+        });
+    }
   }
 
-  calculateGrossAmount(incomes: Income[]) {
-    if (incomes != null) return incomes.reduce((summ, v) => summ += v.gross_amount, 0)
-    else return 0
+  cancel() {
+    this.showForm = false
+    this.newIncomeForm.reset()
   }
 
-  parseData(incomes: Income[]): IncomeElement[] {
+  add(name: string) {
+    const control = <FormArray>this.newIncomeForm.controls[name];
+    control.push(this.initLink());
+  }
+
+  remove(i: number, name: string) {
+    const control = <FormArray>this.newIncomeForm.controls[name];
+    control.removeAt(i);
+  }
+
+  reset(name: string) {
+    let len = this.newIncomeForm.get(name).value.length
+    while(len > 0){
+      this.remove(len - 1, name)
+      len -= 1
+    }
+  }
+
+  hasLinkData(name:string){
+    return this.newIncomeForm.get(name).value.length > 0
+  }
+
+  private initLink() {
+    return this.formBuilder.group({
+      amount: ['', Validators.required],
+      description: ['', Validators.required]
+    });
+  }
+
+  private setDate() {
+    let today = new Date()
+    this.search.year = today.getFullYear()
+  }
+
+  private parseData(incomes: Income[]): IncomeElement[] {
     let incomeElements: IncomeElement[] = []
     if (incomes == null) return incomeElements
     incomes.forEach(income => {
@@ -184,7 +233,21 @@ export class IncomeComponent implements OnInit {
     return MONTH_NAMES[month - 1] + '-' + year
   }
 
-  hasData(){
-    return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
+  private filterNetAmount() {
+    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.netAmount), 0)
+  }
+
+  private filterGrossAmount() {
+    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.grossAmount), 0)
+  }
+
+  private calculateNetAmount(incomes: Income[]) {
+    if (incomes != null) return incomes.reduce((summ, v) => summ += v.net_amount, 0)
+    else return 0
+  }
+
+  private calculateGrossAmount(incomes: Income[]) {
+    if (incomes != null) return incomes.reduce((summ, v) => summ += v.gross_amount, 0)
+    else return 0
   }
 }

@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
 import { UserService } from '../_services/user.service'
-import { AlertService } from '../_services/alert.service'
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 
 @Component({
@@ -24,7 +23,6 @@ export class RegisterComponent implements OnInit {
         private formBuilder: FormBuilder,
         private router: Router,
         private userService: UserService,
-        private alertService: AlertService,
         private notification: NotificationsComponent) { }
 
     ngOnInit() {
@@ -58,11 +56,9 @@ export class RegisterComponent implements OnInit {
             .pipe(first())
             .subscribe(
                 data => {
-                    this.alertService.success('Registration successful', true);
                     this.router.navigate(['/login']);
                 },
                 error => {
-                    
                     this.notification.showNotification('An user with this email or usename already exists!', error.status)
                     this.loading = false;
                 });

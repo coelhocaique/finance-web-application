@@ -7,7 +7,7 @@
                     <div class="card">
                         <div class="card-header bg-dark mb-3">
                             <h4 class="card-title text-white">Create new Debt</h4>
-                            <p class="card-category text-white">Fill the fields to create new debt</p>
+                            <p class="card-category text-white">* All the fields are required</p>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -75,7 +75,7 @@
                     <button mat-raised-button type="button" class="btn btn-primary pull-right" (click)="cancel()">Cancel</button>
                 </div>
             </div>
-        </div> <br/><br/>
+        </div> <br/>
         <div class="row">
             <div class="col-md-12">
                 <div class="row" *ngIf="!showForm">
@@ -135,7 +135,7 @@
                             <ng-container matColumnDef="actions">
                                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    <button mat-icon-button title="Delete" (click)="openDialog(element.referenceCode)"><i
+                                    <button mat-icon-button title="Delete" (click)="delete(element.referenceCode)"><i
                                             class="material-icons">delete</i></button>
                                 </mat-cell>
                             </ng-container>

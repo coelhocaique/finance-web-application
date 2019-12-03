@@ -2,30 +2,175 @@
     <mat-spinner style="margin:0 auto;" *ngIf="!loaded"></mat-spinner>
     <div class="container-fluid" *ngIf="loaded">
         <div class="row">
+            <div class="col-md-10">
+                <div [formGroup]="newIncomeForm" *ngIf="showForm">
+                    <div class="card">
+                        <div class="card-header bg-dark mb-3">
+                            <h4 class="card-title text-white">Create new Income</h4>
+                            <p class="card-category text-white">* All the fields are required </p>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="gross_amount" placeholder="Gross Amount"
+                                            type="text" name="gross_amount" currencyMask
+                                            [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" required>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <mat-form-field>
+                                        <input matInput formControlName="receipt_date" [matDatepicker]="picker"
+                                            placeholder="Received at" name="receipt_date" required>
+                                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                        <mat-datepicker #picker></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <mat-form-field>
+                                        <input matInput formControlName="reference_date" [matDatepicker]="pickerRef"
+                                            placeholder="Reference Date" name="reference_date" required>
+                                        <mat-datepicker-toggle matSuffix [for]="pickerRef"></mat-datepicker-toggle>
+                                        <mat-datepicker #pickerRef></mat-datepicker>
+                                    </mat-form-field>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="description" placeholder="Description"
+                                            name="description" required>
+                                    </mat-form-field>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input matInput formControlName="source_name" name="source_name"
+                                            placeholder="Source Name" required>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button mat-raised-button type="button" class="btn btn-primary btn-block"
+                                        (click)="add('discounts')">Discounts +</button>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button mat-raised-button *ngIf="hasLinkData('discounts')" type="button"
+                                        class="btn btn-primary btn-block" (click)="reset('discounts')">Reset</button>
+                                </div>
+                            </div>
+
+                            <div formArrayName="discounts">
+                                <div *ngFor="let controls of newIncomeForm.controls.discounts.controls; let i=index">
+                                    <div class="row" [formGroupName]="i">
+
+                                        <div class="col-md-2">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput formControlName="amount" placeholder="Amount"
+                                                    currencyMask
+                                                    [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                                    required>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput formControlName="description" placeholder="Description"
+                                                    required>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button mat-raised-button type="button" class="btn btn-primary pull-right"
+                                                (click)="remove(i, 'discounts')">Remove</button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button mat-raised-button type="button" class="btn btn-primary btn-block"
+                                        (click)="add('additions')">Additions +</button>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button mat-raised-button *ngIf="hasLinkData('additions')" type="button"
+                                        class="btn btn-primary btn-block" (click)="reset('additions')">Reset</button>
+                                </div>
+                            </div>
+
+                            <div formArrayName="additions">
+                                <div *ngFor="let controls of newIncomeForm.controls.additions.controls; let i=index">
+                                    <div class="row" [formGroupName]="i">
+
+                                        <div class="col-md-2">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput formControlName="amount" placeholder="Amount"
+                                                    currencyMask
+                                                    [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                                                    required>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <mat-form-field class="example-full-width">
+                                                <input matInput formControlName="description" placeholder="Description"
+                                                    required>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <button mat-raised-button type="button" class="btn btn-primary pull-right"
+                                                (click)="remove(i, 'additions')">Remove</button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button mat-raised-button type="submit" class="btn btn-primary pull-right"
+                        [disabled]="!newIncomeForm.valid" (click)="create()">Submit</button>
+
+                    <button mat-raised-button type="button" class="btn btn-primary pull-right"
+                        (click)="cancel()">Cancel</button>
+                </div>
+            </div>
+        </div> <br />
+        <div class="row">
             <div class="col-md-12">
-                <div class="col-md-6">
-                    <div class="form-label-group">
-                        <input [(ngModel)]="search.year" type="text" id="year" class="form-control" placeholder="Year"
-                            required="required" autofocus="autofocus">
+                <div class="row" *ngIf="!showForm">
+                    <div class="col-md-2">
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="search.year" type="number" placeholder="Year" name="year"
+                                required>
+                        </mat-form-field>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-label-group">
-                        <input [(ngModel)]="search.month" type="text" id="month" class="form-control"
-                            placeholder="Month">
+                    <div class="col-md-2">
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="search.month" type="number" placeholder="Month" name="month"
+                                required>
+                        </mat-form-field>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <button id="query" type="button" class="btn btn-primary btn-block"
                             (click)="getIncomes()">Search</button>
                     </div>
-                    <div class="col-md-6">
-                        <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                            [routerLink]="['/income']">Add +</button>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-block" (click)="initForm()">Add Income</button>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card-header bg-dark mb-3">
                         <h4 class="card-title text-white">Incomes</h4>
@@ -65,7 +210,7 @@
                             <ng-container matColumnDef="actions">
                                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    <button mat-icon-button title="Delete" (click)="openDialog(element.id)"><i
+                                    <button mat-icon-button title="Delete" (click)="delete(element.id)"><i
                                             class="material-icons">delete</i></button>
                                 </mat-cell>
                             </ng-container>

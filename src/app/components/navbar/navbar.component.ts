@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
-import { ROUTES } from '../sidebar/sidebar.component';
-import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import { ROUTES, SETTINGS_ROUTES } from '../sidebar/sidebar.component';
+import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthenticationService } from 'app/_services/authentication.service';
 
@@ -10,7 +10,7 @@ import { AuthenticationService } from 'app/_services/authentication.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-    private listTitles: any[];
+    private listTitles = {};
     location: Location;
       mobile_menu_visible: any = 0;
     private toggleButton: any;
@@ -25,7 +25,8 @@ export class NavbarComponent implements OnInit {
     }
 
     ngOnInit(){
-      this.listTitles = ROUTES.filter(listTitle => listTitle);
+      ROUTES.forEach(element => {this.listTitles[element.path] = element.title});
+      SETTINGS_ROUTES.forEach(element => {this.listTitles[element.path] = element.title});
       const navbar: HTMLElement = this.element.nativeElement;
       this.toggleButton = navbar.getElementsByClassName('navbar-toggler')[0];
       this.router.events.subscribe((event) => {
@@ -118,14 +119,7 @@ export class NavbarComponent implements OnInit {
       if(titlee.charAt(0) === '#'){
           titlee = titlee.slice( 2 );
       }
-      titlee = titlee.split('/').pop();
-
-      for(var item = 0; item < this.listTitles.length; item++){
-          if(this.listTitles[item].path === titlee){
-              return this.listTitles[item].title;
-          }
-      }
-      return titlee;
+      return this.listTitles[titlee];
     }
 
     isLoggedIn(){

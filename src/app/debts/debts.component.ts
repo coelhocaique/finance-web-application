@@ -86,36 +86,20 @@ export class DebtsComponent implements OnInit {
   types: string[];
 
   constructor(
-    private debtsService: DebtsService, 
+    private debtsService: DebtsService,
     private notification: NotificationsComponent,
-    private dialog: MatDialog, 
+    private dialog: MatDialog,
     private parameterService: ParameterService,
     private formBuilder: FormBuilder
   ) { }
 
-  openDialog(refCode: string): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
-      width: '250px',
-      data: {
-        title: "Delete Debt",
-        message: "Are you sure you want to delete this debt?"
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.delete(refCode)
-      }
-    });
-  }
-
   ngOnInit() {
+    this.showForm = false
     this.setDate()
     this.getDebts()
   }
 
   getDebts() {
-    this.showForm = false
     this.debtsService.getDebts(this.search.year, this.search.month)
       .subscribe(
         data => {
@@ -133,16 +117,28 @@ export class DebtsComponent implements OnInit {
       );
   }
 
-  delete(refCode: string) {
-    this.debtsService.delete(refCode)
-      .subscribe(resp => {
-        this.notification.showNotification('Succesfully deleted!', resp.status);
-        if (resp.status >= 200 && resp.status < 400) {
-          setTimeout(() => {
-            this.clickOnSearch()
-          }, 100)
-        }
-      });
+  delete(refCode: string): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+      data: {
+        title: "Delete Debt",
+        message: "Are you sure you want to delete this debt?"
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.debtsService.delete(refCode)
+          .subscribe(resp => {
+            this.notification.showNotification('Succesfully deleted!', resp.status);
+            if (resp.status >= 200 && resp.status < 400) {
+              setTimeout(() => {
+                this.getDebts()
+              }, 100)
+            }
+          });
+      }
+    });
   }
 
   setDate() {
@@ -161,18 +157,67 @@ export class DebtsComponent implements OnInit {
     }
   }
 
-  calculation() {
-    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.amount), 0)
+  hasData() {
+    return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
   }
 
-  calculateTotalAmount(debts: Debt[]) {  
-    if (debts != null && debts.length > 0) 
-      return debts.reduce((summ, v) => summ += v.amount, 0)
-    else 
-      return 0
+  initForm() {
+    this.showForm = true
+    this.debtsService.getTypes()
+      .subscribe(
+        data => {
+          var response = data as CustomAttribute[]
+          this.types = response.map(t => t.value) as Array<string>
+        });
+
+    this.debtsService.getTags()
+      .subscribe(
+        data => {
+          var response = data as CustomAttribute[]
+          this.tags = response.map(t => t.value) as Array<string>
+        });
+
+    this.newDebtForm = this.formBuilder.group({
+      amount: ['', Validators.required],
+      description: ['', Validators.required],
+      installments: [1, Validators.required],
+      next_month: [false, Validators.required],
+      debt_date: [new Date(), Validators.required],
+      type: ['', Validators.required],
+      tag: ['', Validators.required],
+    });
   }
 
-  parseData(debts: Debt[]): DebtElement[] {
+  cancel() {
+    this.showForm = false
+    this.newDebtForm.reset()
+  }
+
+  create() {
+    if (this.newDebtForm.valid) {
+      let debt = this.newDebtForm.value
+      debt.debt_date = moment(debt.debt_date).format('YYYY-MM-DD')
+
+      this.debtsService.create(debt)
+        .subscribe(resp => {
+          this.notification.showNotification('Succesfully created!', resp.status)
+          this.newDebtForm.reset()
+          setTimeout(() => this.getDebts())
+        });
+    }
+  }
+
+  private getThreshold() {
+    this.parameterService.find('threshold', this.search.year, this.search.month)
+      .subscribe(data => {
+        let parameters = data as Parameter[]
+        if (parameters != null && parameters.length > 0) {
+          this.debtThreshold = parameters.reduce((summ, v) => summ += parseInt(v.value), 0)
+        }
+      })
+  }
+
+  private parseData(debts: Debt[]): DebtElement[] {
     let debtElements: DebtElement[] = []
     if (debts == null) return debtElements
 
@@ -196,68 +241,14 @@ export class DebtsComponent implements OnInit {
     return debtElements
   }
 
-  hasData() {
-    return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
+  private calculation() {
+    return this.dataSource.filteredData.reduce((summ, v) => summ += parseInt(v.amount), 0)
   }
 
-  initForm(){
-    this.showForm = true
-    this.debtsService.getTypes()
-                     .subscribe(
-                        data => {
-                          var response = data as CustomAttribute[]
-                          this.types = response.map(t => t.value) as Array<string>
-                        });
-
-    this.debtsService.getTags()
-                     .subscribe(
-                          data => {
-                          var response = data as CustomAttribute[]
-                          this.tags = response.map(t => t.value) as Array<string>
-                        });
-   
-    this.newDebtForm = this.formBuilder.group({
-      amount: ['', Validators.required],
-      description: ['', Validators.required],
-      installments: [1, Validators.required],
-      next_month: [false, Validators.required],
-      debt_date: [new Date(), Validators.required],
-      type: ['', Validators.required],
-      tag: ['', Validators.required],
-    });   
-  }
-
-  cancel(){
-    this.showForm = false
-    this.newDebtForm.reset()
-  }
-
-  create(){
-    if (this.newDebtForm.valid){
-      let debt = this.newDebtForm.value
-      debt.debt_date = moment(debt.debt_date).format('YYYY-MM-DD')
-      
-      this.debtsService.create(debt)
-                      .subscribe(resp => {
-                          this.notification.showNotification('Succesfully created!', resp.status)
-                          this.newDebtForm.reset()
-                          this.clickOnSearch()
-                      });
-    }
-  }
-  
-  private getThreshold() {
-    this.parameterService.find('threshold', this.search.year, this.search.month)
-      .subscribe(data => {
-        let parameters = data as Parameter[]
-        if (parameters != null && parameters.length > 0) {
-          this.debtThreshold = parameters.reduce((summ, v) => summ += parseInt(v.value), 0)
-        }
-      })
-  }
-
-  private clickOnSearch(){
-    let element: HTMLElement = document.getElementById('query') as HTMLElement
-    element.click()
+  private calculateTotalAmount(debts: Debt[]) {
+    if (debts != null && debts.length > 0)
+      return debts.reduce((summ, v) => summ += v.amount, 0)
+    else
+      return 0
   }
 }
