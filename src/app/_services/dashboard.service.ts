@@ -36,6 +36,10 @@ export class DashboardService {
   }
 
   private debts(debts: Debt[], len: number) {
+    if (debts.length == 0){
+      return {total: 0, mean: 0}
+    }
+
     let totalAmount = debts.reduce((summ, v) => summ += v.amount, 0)
     let meanAmount = totalAmount / len
     let byType = {}
@@ -69,23 +73,34 @@ export class DashboardService {
   }
 
   private incomes(incomes: Income[], len: number) {
+    if (incomes.length == 0){
+      return { netTotal: 0, netMean: 0, grossTotal: 0, grossMean: 0}
+    }
+
     let netTotal = incomes.reduce((summ, v) => summ += v.net_amount, 0)
     let grossTotal = incomes.reduce((summ, v) => summ += v.gross_amount, 0)
     let meanNet = netTotal / len
     let meanGross = grossTotal / len
     let netByMonth = {}
-    let dicountByMonth = {}
+    let dicountByName = {}
     let netBySourceName = {}
     
     incomes.forEach(income => {
+      income.discounts.forEach(discount => {
+        var desc = discount.description.trim()
+        if(dicountByName[desc] != null){
+          dicountByName[desc] = dicountByName[desc] + discount.amount
+        }else{
+          dicountByName[desc] = discount.amount
+        }
+      })
+
       if(netByMonth[income.reference_date] != null){
         netByMonth[income.reference_date] = netByMonth[income.reference_date] + income.net_amount
-        dicountByMonth[income.reference_date] = dicountByMonth[income.reference_date] + income.discount_amount
       }else{
         netByMonth[income.reference_date] = income.net_amount
-        dicountByMonth[income.reference_date] = income.discount_amount
       }
-
+      
       if(netBySourceName[income.source_name] != null){
         netBySourceName[income.source_name] = netBySourceName[income.source_name] + income.net_amount
       }else{
@@ -97,7 +112,7 @@ export class DashboardService {
             grossTotal: grossTotal, 
             grossMean: meanGross,
             netByMonth : this.getAsListMonth(netByMonth),
-            dicountByMonth : this.getAsListMonth(dicountByMonth),
+            dicountByName : dicountByName,
             netBySourceName : this.getAsList(netBySourceName)}
   }
 

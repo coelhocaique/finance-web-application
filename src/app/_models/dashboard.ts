@@ -12,7 +12,7 @@ export interface DashboardModel {
     grossTotal: number,
     grossMean: number,
     netByMonth,
-    dicountByMonth,
+    dicountByName,
     netBySourceName
   }
   profits: {

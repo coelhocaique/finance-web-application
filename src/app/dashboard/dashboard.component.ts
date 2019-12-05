@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit {
   }
 
   buildDashboard() {
+    this.loaded = false
     var fromDate = this.search.dateFrom
     var toDate = this.search.dateTo
     var months = this.getDiffInMonths(fromDate, toDate) + 1
@@ -46,15 +47,38 @@ export class DashboardComponent implements OnInit {
         setTimeout(() => {
           this.model = this.dashboardService.buildModel(data[0] as Debt[],
             data[1] as Income[],
-            months)   
-          this.initPieChart('debtByTag', 'Debts by Tag', this.model.debts.byTag)
-          this.initPieChart('debtByType', 'Debts by Type', this.model.debts.byType)
-          this.initPieChart('debtByMonth', 'Debts by Month', this.model.debts.byMonth)
-          this.initPieChart('incomeNetByMonth', 'Net Income by Month', this.model.incomes.netByMonth)
-          this.initPieChart('incomeDiscountByMonth', 'Income Discount by Month', this.model.incomes.dicountByMonth)
-          this.initPieChart('incomeBySourceName', 'Net Income by Source Name', this.model.incomes.netBySourceName)
+            months)  
+          
+          if(this.isNotEmpty(this.model.debts.byTag)){ 
+            this.initPieChart('debtByTag', 'Debts by Tag', this.model.debts.byTag)
+          }
+
+          if(this.isNotEmpty(this.model.debts.byType)){
+            this.initPieChart('debtByType', 'Debts by Type', this.model.debts.byType)
+          }
+          
+          if(this.isNotEmpty(this.model.debts.byMonth)){
+            this.initPieChart('debtByMonth', 'Debts by Month', this.model.debts.byMonth)
+          }
+            
+          if(this.isNotEmpty(this.model.incomes.netByMonth)){
+            this.initPieChart('incomeNetByMonth', 'Net Income by Month', this.model.incomes.netByMonth)
+          }
+
+          if(this.isNotEmpty(this.model.incomes.dicountByName)){
+            this.initPieChart('incomeDiscountByName', 'Income Discount by Name', this.model.incomes.dicountByName)
+          }
+
+          if(this.isNotEmpty(this.model.incomes.netBySourceName)){
+            this.initPieChart('incomeBySourceName', 'Net Income by Source Name', this.model.incomes.netBySourceName)
+          }
+          
         })
       })
+  }
+
+  private isNotEmpty(d){
+    return Object.keys(d).length > 0
   }
 
   private getDiffInMonths(date1: Date, date2: Date) {

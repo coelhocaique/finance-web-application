@@ -7,7 +7,8 @@ export interface Income {
     description: string,
     receipt_date: string,
     reference_date: string,
-    source_name: string
+    source_name: string,
+    discounts: Discounts[]
   }
 
   export interface IncomeElement {
@@ -18,4 +19,9 @@ export interface Income {
     referenceDate: string,
     discountAmount: number,
     additionalAmount: number
+  }
+
+  export interface Discounts {
+    amount: number,
+    description: string
   }

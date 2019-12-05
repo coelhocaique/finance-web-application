@@ -162,7 +162,7 @@ export class IncomeComponent implements OnInit {
       this.incomeService.create(income)
         .subscribe(resp => {
           this.notification.showNotification('Succesfully created!', resp.status)
-          this.newIncomeForm.reset()
+          this.initForm()
           setTimeout(() => {
             this.getIncomes()
           }, 100);

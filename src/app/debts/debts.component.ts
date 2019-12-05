@@ -176,16 +176,8 @@ export class DebtsComponent implements OnInit {
           var response = data as CustomAttribute[]
           this.tags = response.map(t => t.value) as Array<string>
         });
-
-    this.newDebtForm = this.formBuilder.group({
-      amount: ['', Validators.required],
-      description: ['', Validators.required],
-      installments: [1, Validators.required],
-      next_month: [false, Validators.required],
-      debt_date: [new Date(), Validators.required],
-      type: ['', Validators.required],
-      tag: ['', Validators.required],
-    });
+    
+      this.initNewDebtForm()
   }
 
   cancel() {
@@ -201,10 +193,22 @@ export class DebtsComponent implements OnInit {
       this.debtsService.create(debt)
         .subscribe(resp => {
           this.notification.showNotification('Succesfully created!', resp.status)
-          this.newDebtForm.reset()
+          this.initNewDebtForm()
           setTimeout(() => this.getDebts())
         });
     }
+  }
+
+  private initNewDebtForm(){
+    this.newDebtForm = this.formBuilder.group({
+      amount: ['', Validators.required],
+      description: ['', Validators.required],
+      installments: [1, Validators.required],
+      next_month: [false, Validators.required],
+      debt_date: [new Date(), Validators.required],
+      type: ['', Validators.required],
+      tag: ['', Validators.required],
+    });
   }
 
   private getThreshold() {
