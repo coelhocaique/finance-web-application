@@ -9,7 +9,7 @@ export class ParameterService {
     private baseUrl = URL_FINANCE_SERVICE + '/v1/parameter'
 
     constructor(private http: HttpClient) { }
-
+    
     findByName(name: string) {
         return this.http.get<Parameter[]>(this.baseUrl + '?name=' + name)
     }

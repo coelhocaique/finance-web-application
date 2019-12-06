@@ -3,8 +3,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
 import { IncomeService } from 'app/_services/income.service';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
-import { DebtsService } from 'app/_services/debts.service';
-import {MONTH_NAMES} from "app/_helpers/constants"
+import { MONTH_NAMES } from "app/_helpers/constants"
 
 @Component({
   selector: 'app-income-new',
@@ -45,10 +44,8 @@ export class IncomeNewComponent implements OnInit {
   create(){
     this.income.discounts = this.addForm.get('discounts').value
     this.income.additions = this.addForm.get('additions').value
-    var receiptDate = moment(this.income.received_at_form.toString()).format('YYYY-MM-DD')
-    this.income.receipt_date = receiptDate
-    var referenceDate = moment(this.income.reference_date_form.toString()).format('YYYYMM')
-    this.income.reference_date = referenceDate
+    this.income.receipt_date = moment(this.income.received_at_form).format('YYYY-MM-DD')
+    this.income.reference_date = moment(this.income.reference_date_form).format('YYYYMM')
     this.incomeService.create(this.income)
                      .subscribe(resp => {
                         this.notification.showNotification('Succesfully created!', resp.status)

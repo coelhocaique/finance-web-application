@@ -1,4 +1,4 @@
-<div class="main-content" >
+<div class="main-content">
     <mat-spinner style="margin:0 auto;" *ngIf="!loaded"></mat-spinner>
     <div class="container-fluid" *ngIf="loaded">
         <div class="row">
@@ -65,7 +65,7 @@
                         <div class="stats">
                             <i class="material-icons">update</i>
                             <strong>
-                                {{model.incomes.grossTotal - model.incomes.netTotal | currency: "R$" }} paid in taxes
+                                mean of {{model.incomes.netMean | currency: "R$" }} per month
                             </strong>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                         <div class="stats">
                             <i class="material-icons">update</i>
                             <strong>
-                               mean of {{model.debts.mean | currency: "R$" }} per month
+                                mean of {{model.debts.mean | currency: "R$" }} per month
                             </strong>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6" *ngIf="charts.debtByTag">
                 <div class="card card-chart">
                     <div class="card-header">
                         <div class="ct-chart" id="debtByTag"
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6" *ngIf="charts.debtByType">
                 <div class="card card-chart">
                     <div class="card-header">
                         <div class="ct-chart" id="debtByType"
@@ -139,7 +139,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6" *ngIf="charts.debtByMonth">
                 <div class="card card-chart">
                     <div class="card-header">
                         <div class="ct-chart" id="debtByMonth"
@@ -161,10 +161,10 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6" *ngIf="charts.debtThresholdByMonth">
                 <div class="card card-chart">
                     <div class="card-header">
-                        <div class="ct-chart" id="incomeNetByMonth"
+                        <div class="ct-chart" id="debtThresholdByMonth"
                             style="height: 370px; width: 100%; margin-left:auto;margin-right:auto;"></div>
                     </div>
                     <div class="card-body">
@@ -185,7 +185,29 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6" *ngIf="charts.incomeNetByMonth">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <div class="ct-chart" id="incomeNetByMonth"
+                            style="height: 370px; width: 100%; margin-left:auto;margin-right:auto;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title"></h4>
+                        <strong>
+                            <p class="card-category">
+                                <span class="text-success"></span>
+                            </p>
+                        </strong>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">update</i> Just Updated
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" *ngIf="charts.incomeDiscountByName">
                 <div class="card card-chart">
                     <div class="card-header">
                         <div class="ct-chart" id="incomeDiscountByName"
@@ -206,8 +228,10 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-6">
+        <div class="row">
+            <div class="col-md-6" *ngIf="charts.incomeBySourceName">
                 <div class="card card-chart">
                     <div class="card-header">
                         <div class="ct-chart" id="incomeBySourceName"

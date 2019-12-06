@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DebtsService } from '../_services/debts.service'
-import { Observable } from 'rxjs';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { DialogComponent } from 'app/dialog/dialog.component';
@@ -9,6 +8,7 @@ import { ParameterService } from 'app/_services/parameter.service';
 import { Parameter, CustomAttribute } from 'app/_models';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import * as moment from 'moment';
+import { THRESHOLD } from 'app/_helpers';
 
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
@@ -103,7 +103,6 @@ export class DebtsComponent implements OnInit {
     this.debtsService.getDebts(this.search.year, this.search.month)
       .subscribe(
         data => {
-          this.loaded = true
           this.debts = data as Debt[]
           let arr: DebtElement[] = this.parseData(this.debts)
           this.dataSource = new MatTableDataSource(arr)
@@ -112,6 +111,7 @@ export class DebtsComponent implements OnInit {
             this.dataSource.sort = this.sort;
             this.totalAmount = this.calculateTotalAmount(this.debts);
             this.getThreshold()
+            this.loaded = true
           });
         }
       );
@@ -212,7 +212,7 @@ export class DebtsComponent implements OnInit {
   }
 
   private getThreshold() {
-    this.parameterService.find('threshold', this.search.year, this.search.month)
+    this.parameterService.find(THRESHOLD, this.search.year, this.search.month)
       .subscribe(data => {
         let parameters = data as Parameter[]
         if (parameters != null && parameters.length > 0) {

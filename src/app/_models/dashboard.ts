@@ -4,7 +4,8 @@ export interface DashboardModel {
     mean: number,
     byTag,
     byType,
-    byMonth
+    byMonth,
+    thresholdDiff
   }
   incomes: {
     netTotal: number,

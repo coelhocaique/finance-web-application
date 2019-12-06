@@ -51,7 +51,7 @@ export class DebtsNewComponent implements OnInit {
   }
 
   create(){
-    var debtDate = moment(this.debt.debt_date_form.toString()).format('YYYY-MM-DD')
+    var debtDate = moment(this.debt.debt_date_form).format('YYYY-MM-DD')
     this.debt.debt_date = debtDate
     
     this.debtsService.create(this.debt)
