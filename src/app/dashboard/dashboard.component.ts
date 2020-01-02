@@ -35,15 +35,7 @@ export class DashboardComponent implements OnInit {
   constructor(private dashboardService: DashboardService) { }
 
   ngOnInit() {
-    this.initParams()
     this.buildDashboard()
-  }
-
-  initParams() {
-    this.search.dateFrom = new Date(this.search.dateFrom.getFullYear(), 0, 1);
-    var d = new Date();
-    d.setMonth(d.getMonth() - 1);
-    this.search.dateTo = d;
   }
 
   buildDashboard() {
