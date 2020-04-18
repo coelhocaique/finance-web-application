@@ -40,13 +40,13 @@
                             <i class="material-icons">account_balance</i>
                         </div>
                         <p class="card-category">Savings</p>
-                        <h3 class="card-title">{{model.profits.total | currency: "R$" }}</h3>
+                        <h3 class="card-title">{{model.saving_total | currency: "R$" }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons">update</i>
                             <strong>
-                                mean of {{model.profits.mean | currency: "R$" }} per month
+                                mean of {{model.saving_total / monthsDiff | currency: "R$" }} per month
                             </strong>
                         </div>
                     </div>
@@ -59,13 +59,13 @@
                             <i class="material-icons">keyboard_arrow_up</i>
                         </div>
                         <p class="card-category">Total Net Income</p>
-                        <h3 class="card-title">{{model.incomes.netTotal | currency: "R$" }}</h3>
+                        <h3 class="card-title">{{model.total_income_net_amount | currency: "R$" }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons">update</i>
                             <strong>
-                                mean of {{model.incomes.netMean | currency: "R$" }} per month
+                                mean of {{model.total_income_net_amount / monthsDiff | currency: "R$" }} per month
                             </strong>
                         </div>
                     </div>
@@ -79,13 +79,13 @@
                         </div>
                         <p class="card-category">Total Debt</p>
                         <h3 class="card-title">
-                            {{model.debts.total | currency: "R$" }}</h3>
+                            {{model.debt_total_amount | currency: "R$" }}</h3>
                     </div>
                     <div class="card-footer">
                         <div class="stats">
                             <i class="material-icons">update</i>
                             <strong>
-                                mean of {{model.debts.mean | currency: "R$" }} per month
+                                mean of {{model.debt_total_amount / monthsDiff | currency: "R$" }} per month
                             </strong>
                         </div>
                     </div>
@@ -161,6 +161,30 @@
                 </div>
             </div>
 
+            <div class="col-md-6" *ngIf="charts.debtByName">
+                <div class="card card-chart">
+                    <div class="card-header">
+                        <div class="ct-chart" id="debtByName"
+                            style="height: 370px; width: 100%; margin-left:auto;margin-right:auto;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title"></h4>
+                        <strong>
+                            <p class="card-category">
+                                <span class="text-success"></span>
+                            </p>
+                        </strong>
+                    </div>
+                    <div class="card-footer">
+                        <div class="stats">
+                            <i class="material-icons">update</i> Just Updated
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-6" *ngIf="charts.debtThresholdByMonth">
                 <div class="card card-chart">
                     <div class="card-header">
@@ -182,9 +206,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
             <div class="col-md-6" *ngIf="charts.incomeNetByMonth">
                 <div class="card card-chart">
                     <div class="card-header">
@@ -206,7 +227,9 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="row">
             <div class="col-md-6" *ngIf="charts.incomeDiscountByName">
                 <div class="card card-chart">
                     <div class="card-header">
@@ -228,9 +251,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
             <div class="col-md-6" *ngIf="charts.incomeBySourceName">
                 <div class="card card-chart">
                     <div class="card-header">

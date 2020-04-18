@@ -14,8 +14,9 @@ import { DashboardService } from './_services/dashboard.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { UserService } from './_services/user.service';
 import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
-import { ParameterService } from './_services/parameter.service';
-import { CustomAttributeService } from './_services/custom-attribute.service';
+import { DebtTagService } from './_services/debt-tag.service';
+import { DebtTypeService } from './_services/debt-type.service';
+import { DebtThresholdService } from './_services/debt-threshold.service';
 
 @NgModule({
   imports: [
@@ -38,8 +39,9 @@ import { CustomAttributeService } from './_services/custom-attribute.service';
     DashboardService,
     AuthenticationService,
     UserService,
-    ParameterService,
-    CustomAttributeService,
+    DebtTagService,
+    DebtTypeService,
+    DebtThresholdService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ContentTypeInterceptor, multi: true }
   ],

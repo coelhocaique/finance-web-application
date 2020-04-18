@@ -4,7 +4,7 @@ import { NotificationsComponent } from 'app/notifications/notifications.componen
 import { DialogComponent } from 'app/dialog/dialog.component';
 import { CustomAttribute } from 'app/_models';
 import { MatPaginator, MatSort, MatDialog, MatTableDataSource } from '@angular/material';
-import { CustomAttributeService } from 'app/_services/custom-attribute.service';
+import { DebtTagService } from 'app/_services/debt-tag.service';
 
 const DISPLAYED_COLUMNS: Array<string> = ['value',
   'actions'];
@@ -39,42 +39,45 @@ export class DebtTagComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(private formBuilder: FormBuilder, 
-    private customAttributeService: CustomAttributeService,
+    private service: DebtTagService,
     private notification: NotificationsComponent,
     private dialog: MatDialog) { }
 
   ngOnInit() {
     this.initForm()
-    this.getParameters()
+    this.getTags()
   }
   
   create(){
     if (this.addForm.valid){
       let inputs = this.addForm.controls['inputs'].value
       inputs.forEach(element => {
-        let parameter = {property_name: 'debt_tag', 
-                        value: element.value}
-        this.customAttributeService.create(parameter).subscribe()
+        this.service.create(element.value).subscribe(
+          data => {
+            setTimeout(() => {
+              this.initForm()
+              this.getTags()
+            });
+          }
+        )
       });
-      this.initForm()
-      this.getParameters()
     }
   }
 
   delete(id: string) {
-    this.customAttributeService.delete(id)
+    this.service.delete(id)
       .subscribe(resp => {
         this.notification.showNotification('Succesfully deleted!', resp.status);
         if (resp.status >= 200 && resp.status < 400) {
           setTimeout(() => {
-            this.getParameters()
+            this.getTags()
           }, 100)
         }
       });
   }
 
-  getParameters(){
-    this.customAttributeService.findByPropertyName('debt_tag')
+  getTags(){
+    this.service.retrieveAll()
       .subscribe(data => {
         this.loaded = true
         this.customAttribute = data

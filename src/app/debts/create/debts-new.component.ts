@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DebtsService } from '../../_services/debts.service'
 import * as moment from 'moment';
 import { NotificationsComponent } from '../../notifications/notifications.component'
-import { CustomAttribute } from 'app/_models';
+import { DebtRetrieval } from 'app/_models';
 import { MONTH_NAMES } from "app/_helpers/constants"
 
 @Component({
@@ -32,21 +32,13 @@ export class DebtsNewComponent implements OnInit {
   constructor(private debtsService: DebtsService, private notification: NotificationsComponent) { }
 
   ngOnInit() {
-
-    this.debtsService.getTypes()
-                     .subscribe(
-                        data => {
-                          var response = data as CustomAttribute[]
-                          this.types = response.map(t => t.value) as Array<string>
-                        });
-
-    this.debtsService.getTags()
-                     .subscribe(
-                          data => {
-                          var response = data as CustomAttribute[]
-                          this.tags = response.map(t => t.value) as Array<string>
-                        });
-
+    this.debtsService.retrieveCreation()
+      .subscribe(
+        data => {
+          var response = data as DebtRetrieval
+          this.types = response.types
+          this.tags = response.tags
+        });
     this.resetForm()                    
   }
 

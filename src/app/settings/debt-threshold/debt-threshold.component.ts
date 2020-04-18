@@ -1,12 +1,11 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
-import { ParameterService } from 'app/_services/parameter.service';
 import { Parameter, ParameterElement } from 'app/_models/parameter';
-import { DebtsService } from 'app/_services/debts.service';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { DialogComponent } from 'app/dialog/dialog.component';
-import {MONTH_NAMES} from "app/_helpers/constants"
+import { MONTH_NAMES} from "app/_helpers/constants"
+import { DebtThresholdService } from 'app/_services/debt-threshold.service';
 
 const DISPLAYED_COLUMNS: Array<string> = ['value',
   'referenceDate',
@@ -46,7 +45,7 @@ export class DebtThresholdComponent implements OnInit {
   @Input() loaded = false
 
   constructor(private formBuilder: FormBuilder, 
-    private parameterService: ParameterService,
+    private service: DebtThresholdService,
     private notification: NotificationsComponent,
     private dialog: MatDialog) { }
 
@@ -59,18 +58,21 @@ export class DebtThresholdComponent implements OnInit {
     if (this.addForm.valid){
       let inputs = this.addForm.controls['inputs'].value
       inputs.forEach(element => {
-        let parameter = {name: 'threshold', 
-                        value: element.value, 
-                        reference_date: element.referenceDate}
-        this.parameterService.create(parameter).subscribe()
+        let threshold = { value: element.value, reference_date: element.referenceDate}
+        this.service.create(threshold).subscribe(
+          data => {
+            setTimeout(() => {
+              this.initForm()
+              this.getParameters()
+            });
+          }
+        )
       });
-      this.initForm()
-      this.getParameters()
     }
   }
 
   delete(id: string) {
-    this.parameterService.delete(id)
+    this.service.delete(id)
       .subscribe(resp => {
         this.notification.showNotification('Succesfully deleted!', resp.status);
         if (resp.status >= 200 && resp.status < 400) {
@@ -82,7 +84,7 @@ export class DebtThresholdComponent implements OnInit {
   }
 
   getParameters(){
-    this.parameterService.findByName('threshold')
+    this.service.retrieveAll()
       .subscribe(data => {
         this.loaded = true
         this.parameters = data

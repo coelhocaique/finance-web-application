@@ -3,20 +3,13 @@ import { DebtsService } from '../_services/debts.service'
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { DialogComponent } from 'app/dialog/dialog.component';
-import { DebtElement, Debt } from 'app/_models/debt';
-import { ParameterService } from 'app/_services/parameter.service';
-import { Parameter, CustomAttribute } from 'app/_models';
+import { DebtElement, Debt, DebtRetrieval } from 'app/_models/debt';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { THRESHOLD } from 'app/_helpers';
 
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
   'installment',
-  // 'debtDate',
-  // 'type',
-  // 'tag',
-  // 'totalAmount',
   'actions'];
 
 const COLUMN_NAMES = [
@@ -78,9 +71,9 @@ export class DebtsComponent implements OnInit {
 
   @Input() loaded = false
   @Input() showForm = false
-  totalAmount = 0;
+  totalAmount: number;
 
-  debtThreshold = 0;
+  debtThreshold: number;
 
   tags: string[];
   types: string[];
@@ -89,7 +82,6 @@ export class DebtsComponent implements OnInit {
     private debtsService: DebtsService,
     private notification: NotificationsComponent,
     private dialog: MatDialog,
-    private parameterService: ParameterService,
     private formBuilder: FormBuilder
   ) { }
 
@@ -103,21 +95,30 @@ export class DebtsComponent implements OnInit {
     this.debtsService.getDebts(this.search.year, this.search.month)
       .subscribe(
         data => {
-          this.debts = data as Debt[]
-          let arr: DebtElement[] = this.parseData(this.debts)
-          this.dataSource = new MatTableDataSource(arr)
-          setTimeout(() => {
-            this.dataSource.paginator = this.paginator
-            this.dataSource.sort = this.sort;
-            this.totalAmount = this.calculateTotalAmount(this.debts);
-            this.getThreshold()
-            this.loaded = true
-          });
+          let retrieval = data as DebtRetrieval
+          if (retrieval != null){
+            this.debts = retrieval.debts
+            let arr: DebtElement[] = this.parseData(this.debts)
+            this.dataSource = new MatTableDataSource(arr)
+            setTimeout(() => {
+              this.dataSource.paginator = this.paginator
+              this.dataSource.sort = this.sort;
+              this.totalAmount = this.calculateTotalAmount(this.debts);
+              this.debtThreshold = retrieval.threshold
+              this.loaded = true
+            });
+          } else {
+            this.debtThreshold = 0
+            this.debts = []
+            this.totalAmount = 0
+            this.dataSource = null
+          }
         }
       );
   }
 
   delete(refCode: string): void {
+    console.log(refCode)
     const dialogRef = this.dialog.open(DialogComponent, {
       width: '250px',
       data: {
@@ -163,20 +164,16 @@ export class DebtsComponent implements OnInit {
 
   initForm() {
     this.showForm = true
-    this.debtsService.getTypes()
-      .subscribe(
-        data => {
-          var response = data as CustomAttribute[]
-          this.types = response.map(t => t.value) as Array<string>
-        });
+    if (this.types == null || this.tags == null){
+      this.debtsService.retrieveCreation()
+        .subscribe(
+          data => {
+            var response = data as DebtRetrieval
+            this.types = response.types
+            this.tags = response.tags
+          });
+      }
 
-    this.debtsService.getTags()
-      .subscribe(
-        data => {
-          var response = data as CustomAttribute[]
-          this.tags = response.map(t => t.value) as Array<string>
-        });
-    
       this.initNewDebtForm()
   }
 
@@ -209,16 +206,6 @@ export class DebtsComponent implements OnInit {
       type: ['', Validators.required],
       tag: ['', Validators.required],
     });
-  }
-
-  private getThreshold() {
-    this.parameterService.find(THRESHOLD, this.search.year, this.search.month)
-      .subscribe(data => {
-        let parameters = data as Parameter[]
-        if (parameters != null && parameters.length > 0) {
-          this.debtThreshold = parameters.reduce((summ, v) => summ += parseInt(v.value), 0)
-        }
-      })
   }
 
   private parseData(debts: Debt[]): DebtElement[] {

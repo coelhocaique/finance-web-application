@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { URL_FINANCE_SERVICE } from 'app/_helpers/constants'
+import { URL_GATEWAY } from 'app/_helpers/constants'
 
 @Injectable()
 export class IncomeService {
 
-  private baseUrl = URL_FINANCE_SERVICE + '/v1/income'
+  private baseUrl = URL_GATEWAY + '/income'
 
   constructor(private http: HttpClient) { }
 

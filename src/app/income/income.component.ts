@@ -11,10 +11,6 @@ import * as moment from 'moment';
 const DISPLAYED_COLUMNS: Array<string> = [
   'netAmount',
   'description',
-  // 'grossAmount',
-  // 'referenceDate',
-  // 'discountAmount',
-  // 'additionalAmount',
   'actions'];
 
 const COLUMN_NAMES = [{

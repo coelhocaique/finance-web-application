@@ -13,6 +13,13 @@ export interface Debt {
   creation_date: string
 }
 
+export interface DebtRetrieval {
+  debts: Debt[],
+  threshold: number,
+  tags: string[],
+  types: string[]
+}
+
 export interface DebtElement {
   creationDate: string,
   amount: number,
