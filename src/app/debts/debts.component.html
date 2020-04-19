@@ -91,11 +91,28 @@
                                 required>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-2">
-                        <button id="query" type="button" class="btn btn-primary btn-block" (click)="getDebts()">Search</button>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-primary btn-block" (click)="initForm()">Create New Debt</button>
+
+                    <div class="col-md-3">
+                        <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                matTooltip="Search"
+                                (click)="getDebts()">
+                                <i class="material-icons">search</i>
+                                <div class="ripple-container"></div>
+                            </button>
+                        
+                        <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                matTooltip="Create New Debt"
+                                (click)="initForm()">
+                                <i class="material-icons">add</i>
+                                <div class="ripple-container"></div>
+                        </button>
+                    
+                        <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                matTooltip="Recurring Debts"
+                                [routerLink]="['/recurring-debt']">
+                                <i class="material-icons">replay</i>
+                                <div class="ripple-container"></div>
+                        </button>
                     </div>
                 </div>
                 <div class="card">

@@ -19,6 +19,7 @@ export const SETTINGS_ROUTES: RouteInfo[] = [
     { path: '/debt-type', title: 'Debt Type',  icon:'build', class: ''},
     { path: '/debt-tag',   title: 'Debt Tags',  icon:'build', class: ''},
     { path: '/debt-threshold', title: 'Debt Threshold',  icon:'build', class: ''},
+    { path: '/recurring-debt', title: 'Recurring Debt',  icon:'money_off', class: ''},
 ]
 
 @Component({

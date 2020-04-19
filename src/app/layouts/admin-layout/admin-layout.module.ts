@@ -35,6 +35,7 @@ import { AuthGuard } from 'app/_guards';
 import { DebtTagComponent } from 'app/settings/debt-tag/debt-tag.component';
 import { DebtTypeComponent } from 'app/settings/debt-type/debt-type.component';
 import { DebtThresholdComponent } from 'app/settings/debt-threshold/debt-threshold.component';
+import { RecurringDebtComponent } from 'app/settings/recurring-debt/recurring-debt.component';
 
 @NgModule({
   imports: [
@@ -72,7 +73,8 @@ import { DebtThresholdComponent } from 'app/settings/debt-threshold/debt-thresho
     LogoutComponent,
     DebtTagComponent,
     DebtTypeComponent,
-    DebtThresholdComponent
+    DebtThresholdComponent,
+    RecurringDebtComponent
   ],
   providers: [AuthGuard],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

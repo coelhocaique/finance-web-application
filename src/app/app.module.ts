@@ -17,6 +17,7 @@ import { JwtInterceptor, ContentTypeInterceptor } from './_helpers';
 import { DebtTagService } from './_services/debt-tag.service';
 import { DebtTypeService } from './_services/debt-type.service';
 import { DebtThresholdService } from './_services/debt-threshold.service';
+import { RecurringDebtService } from './_services/recurring-debt.service';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { DebtThresholdService } from './_services/debt-threshold.service';
     DebtTagService,
     DebtTypeService,
     DebtThresholdService,
+    RecurringDebtService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ContentTypeInterceptor, multi: true }
   ],

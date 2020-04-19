@@ -1,0 +1,98 @@
+<div class="main-content">
+  <mat-spinner style="margin:0 auto;" *ngIf="!loaded"></mat-spinner>
+  <div class="container-fluid" *ngIf="loaded">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-1">
+                <button mat-raised-button type="button" 
+                    class="btn btn-primary btn-round btn-just-icon"
+                    matTooltip="Create New Recurring Debt"
+                    (click)="add()">
+                    <i class="material-icons">add</i>
+                    <div class="ripple-container"></div>
+              </button>
+            </div>
+        </div>
+
+        <div [formGroup]="addForm">
+          <div formArrayName="inputs">
+            <div *ngFor="let controls of addForm.controls.inputs.controls; let i=index">
+              <div class="row" [formGroupName]="i">
+                
+                  <div class="col-md-2">
+                    <mat-form-field class="example-full-width">
+                        <input matInput formControlName="amount" placeholder="Total Cost" type="text"
+                            name=amount currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }"
+                            required>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-4">
+                    <mat-form-field class="example-full-width">
+                        <input matInput formControlName="description" placeholder="Description" name="description"
+                            required>
+                    </mat-form-field>
+                </div>
+
+
+                  <div class="col-md-2">
+                    <mat-form-field>
+                        <mat-select formControlName="type" name="type" required placeholder="Type">
+                            <mat-option *ngFor="let t of types" [value]="t">
+                                {{ t }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-4">
+                    <mat-form-field>
+                        <mat-select formControlName="tag" name="tag" required placeholder="Tag">
+                            <mat-option *ngFor="let t of tags" [value]="t">
+                                {{ t }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-2">
+                  <button mat-raised-button type="button" class="btn btn-primary pull-right"
+                    (click)="remove(i)">Remove</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <button mat-raised-button type="submit" class="btn btn-primary pull-right"
+          (click)="create()" *ngIf="hasFormData()" [disabled]="!addForm.valid">Submit</button>
+        </div>
+
+        <div class="card">
+          <div class="mat-elevation-z8" *ngIf="hasData()">
+            <mat-table #table [dataSource]="dataSource" matSort>
+              <ng-container matColumnDef="{{column.id}}" *ngFor="let column of columnNames">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> <strong>{{column.value}} </strong>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element[column.id]}} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  <button mat-icon-button title="Delete" (click)="openDialog(element.recurring_debt_id)"><i class="material-icons">delete</i>
+                  </button>
+                </mat-cell>
+              </ng-container>
+
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[10, 20, 30, 40 , 50]" showFirstLastButtons></mat-paginator>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
