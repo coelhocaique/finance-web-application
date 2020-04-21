@@ -55,18 +55,30 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-4">
-                                    <button mat-raised-button type="button" class="btn btn-primary btn-block"
-                                        (click)="add('discounts')">Discounts +</button>
-                                </div>
-
                                 <div class="col-md-2">
-                                    <button mat-raised-button *ngIf="hasLinkData('discounts')" type="button"
-                                        class="btn btn-primary btn-block" (click)="reset('discounts')">Reset</button>
+                                    <span> <h4> Discounts</h4> </span> 
                                 </div>
+                                <div class="col-md-4">
+                                    <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                        (click)="add('discounts')">
+                                        <i class="material-icons">add</i>
+                                        <div class="ripple-container"></div>
+                                   </button>  
+            
+                                    <button mat-raised-button type="button" 
+                                            *ngIf="hasLinkData('discounts')"
+                                            class="btn btn-primary btn-round btn-just-icon"
+                                            matTooltip="Clear All"
+                                            (click)="reset('discounts')">
+                                        <i class="material-icons">clear_all</i>
+                                        <div class="ripple-container"></div>
+                                    </button> 
+                                </div>
+                                
                             </div>
 
                             <div formArrayName="discounts">
+                                <br/>
                                 <div *ngFor="let controls of newIncomeForm.controls.discounts.controls; let i=index">
                                     <div class="row" [formGroupName]="i">
 
@@ -87,28 +99,41 @@
                                         </div>
 
                                         <div class="col-md-2">
-                                            <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                                                (click)="remove(i, 'discounts')">Remove</button>
+                                            <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                                matTooltip="Remove"
+                                                (click)="remove(i, 'discounts')">
+                                                <i class="material-icons">remove</i>
+                                                <div class="ripple-container"></div>
+                                            </button> 
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
 
                             <div class="row">
-                                <div class="col-md-4">
-                                    <button mat-raised-button type="button" class="btn btn-primary btn-block"
-                                        (click)="add('additions')">Additions +</button>
-                                </div>
-
                                 <div class="col-md-2">
-                                    <button mat-raised-button *ngIf="hasLinkData('additions')" type="button"
-                                        class="btn btn-primary btn-block" (click)="reset('additions')">Reset</button>
+                                    <span> <h4> Additions</h4> </span> 
+                                </div>
+                                <div class="col-md-4">
+                                    <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                        (click)="add('additions')">
+                                        <i class="material-icons">add</i>
+                                        <div class="ripple-container"></div>
+                                   </button>  
+            
+                                    <button mat-raised-button type="button" 
+                                            *ngIf="hasLinkData('additions')"
+                                            class="btn btn-primary btn-round btn-just-icon"
+                                            matTooltip="Clear All"
+                                            (click)="reset('additions')">
+                                        <i class="material-icons">clear_all</i>
+                                        <div class="ripple-container"></div>
+                                    </button> 
                                 </div>
                             </div>
 
                             <div formArrayName="additions">
+                                <br/>
                                 <div *ngFor="let controls of newIncomeForm.controls.additions.controls; let i=index">
                                     <div class="row" [formGroupName]="i">
 
@@ -129,8 +154,12 @@
                                         </div>
 
                                         <div class="col-md-2">
-                                            <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                                                (click)="remove(i, 'additions')">Remove</button>
+                                            <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                                                    matTooltip="Remove"
+                                                    (click)="remove(i, 'additions')">
+                                                <i class="material-icons">remove</i>
+                                                <div class="ripple-container"></div>
+                                            </button> 
                                         </div>
 
                                     </div>
@@ -139,12 +168,20 @@
                             </div>
                         </div>
                     </div>
-
-                    <button mat-raised-button type="submit" class="btn btn-primary pull-right"
-                        [disabled]="!newIncomeForm.valid" (click)="create()">Submit</button>
-
-                    <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                        (click)="cancel()">Cancel</button>
+ 
+                    <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon pull-right"
+                        matTooltip="Submit"
+                        (click)="create()"
+                        [disabled]="!newIncomeForm.valid">
+                        <i class="material-icons">send</i>
+                        <div class="ripple-container"></div>
+                    </button>
+                    <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon pull-right"
+                            matTooltip="Cancel"
+                            (click)="cancel()">
+                            <i class="material-icons">close</i>
+                            <div class="ripple-container"></div>
+                     </button> 
                 </div>
             </div>
         </div> <br />
@@ -217,7 +254,9 @@
                             <ng-container matColumnDef="actions">
                                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                                 <mat-cell *matCellDef="let element">
-                                    <button mat-icon-button title="Delete" (click)="delete(element.id)"><i
+                                    <button mat-icon-button title="Delete" 
+                                            matTooltip="Delete"
+                                            (click)="delete(element.id)"><i
                                             class="material-icons">delete</i></button>
                                 </mat-cell>
                             </ng-container>

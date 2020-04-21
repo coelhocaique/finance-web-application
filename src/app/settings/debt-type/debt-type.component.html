@@ -4,14 +4,21 @@
     <div class="row">
       <div class="col-md-12">
         <div class="row">
-            <div class="col-md-1">
+            <div class="col-md-2">
               <button mat-raised-button type="button" 
                     class="btn btn-primary btn-round btn-just-icon"
-                    matTooltip="Create New Recurring Debt"
+                    matTooltip="Create New Debt Type"
                     (click)="add()">
                     <i class="material-icons">add</i>
                     <div class="ripple-container"></div>
               </button>
+              <button mat-raised-button type="button" 
+                    class="btn btn-primary btn-round btn-just-icon"
+                    matTooltip="Go to Debts"
+                    [routerLink]="['/debts']">
+                    <i class="material-icons">money_off</i>
+                    <div class="ripple-container"></div>
+                </button>
             </div>
         </div>
 
@@ -26,16 +33,26 @@
                 </div>
 
                 <div class="col-md-2">
-                  <button mat-raised-button type="button" class="btn btn-primary pull-right"
-                    (click)="remove(i)">Remove</button>
+                  <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon"
+                      matTooltip="Remove"
+                      (click)="remove(i)">
+                      <i class="material-icons">remove</i>
+                      <div class="ripple-container"></div>
+                  </button> 
                 </div>
 
               </div>
             </div>
           </div>
 
-          <button mat-raised-button type="submit" class="btn btn-primary pull-right"
-          (click)="create()" *ngIf="hasFormData()" [disabled]="!addForm.valid">Submit</button>
+          <button mat-raised-button type="button" class="btn btn-primary btn-round btn-just-icon pull-right"
+                  matTooltip="Submit"
+                  (click)="create()"
+                  *ngIf="hasFormData()"
+                  [disabled]="!addForm.valid">
+            <i class="material-icons">send</i>
+            <div class="ripple-container"></div>
+          </button> 
         </div>
 
         <div class="card">
@@ -50,7 +67,10 @@
               <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                 <mat-cell *matCellDef="let element">
-                  <button mat-icon-button title="Delete" (click)="openDialog(element.custom_attribute_id)"><i class="material-icons">delete</i>
+                  <button mat-icon-button title="Delete" 
+                          matTooltip="Delete" 
+                          (click)="openDialog(element.custom_attribute_id)">
+                          <i class="material-icons">delete</i>
                   </button>
                 </mat-cell>
               </ng-container>

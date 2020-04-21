@@ -120,20 +120,17 @@ export class RecurringDebtComponent implements OnInit {
     return this.dataSource != null && this.dataSource.data != null && this.dataSource.data.length > 0
   }
 
+  totalAmount(){
+    if (this.recurringDebts != null && this.recurringDebts.length > 0)
+      return this.recurringDebts.reduce((summ, v) => summ += v.amount, 0)
+    else
+      return 0
+  }
+
   initForm() {
     this.addForm = this.formBuilder.group({
       inputs: this.formBuilder.array([])
     })
-
-    if (this.types == null || this.tags == null){
-      this.service.retrieveCreation()
-        .subscribe(
-          data => {
-            var response = data as RecurringDebtRetrieval
-            this.types = response.types
-            this.tags = response.tags
-          })
-      }
   }
 
   create() {
@@ -158,6 +155,7 @@ export class RecurringDebtComponent implements OnInit {
   }
 
   add() {
+      this.retrieveCreation()
       const control = < FormArray > this.addForm.controls['inputs'];
       control.push(this.initLink());
   }
@@ -165,6 +163,20 @@ export class RecurringDebtComponent implements OnInit {
   remove(i: number) {
     const control = < FormArray > this.addForm.controls['inputs'];
     control.removeAt(i);
+  }
+
+  retrieveCreation(){
+    if (!this.hasFormData()){
+      if (this.types == null || this.tags == null){
+        this.service.retrieveCreation()
+          .subscribe(
+            data => {
+              var response = data as RecurringDebtRetrieval
+              this.types = response.types
+              this.tags = response.tags
+            })
+        }
+    }
   }
 
   private initLink() {

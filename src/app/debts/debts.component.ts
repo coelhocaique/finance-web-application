@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DebtsService } from '../_services/debts.service'
+import { RecurringDebtService } from '../_services/recurring-debt.service'
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { DialogComponent } from 'app/dialog/dialog.component';
@@ -82,7 +83,8 @@ export class DebtsComponent implements OnInit {
     private debtsService: DebtsService,
     private notification: NotificationsComponent,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private recurringDebtService: RecurringDebtService
   ) { }
 
   ngOnInit() {
@@ -194,6 +196,20 @@ export class DebtsComponent implements OnInit {
           setTimeout(() => this.getDebts())
         });
     }
+  }
+
+  addRecurringDebt(element: DebtElement){
+    let recurringDebt = {
+      amount: element.amount,
+      description: element.description,
+      tag: element.tag,
+      type: element.type
+    }
+
+    this.recurringDebtService.create(recurringDebt)
+        .subscribe(resp => {
+          this.notification.showNotification('Succesfully added to recurring debts!', resp.status)
+        });
   }
 
   private initNewDebtForm(){
