@@ -5,6 +5,8 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { NotificationsComponent } from 'app/notifications/notifications.component';
 import { RecurringDebtService } from 'app/_services/recurring-debt.service';
 import { RecurringDebt, RecurringDebtRetrieval } from 'app/_models/recurring-debt';
+import { DebtsService } from 'app/_services/debts.service';
+import * as moment from 'moment';
 
 const DISPLAYED_COLUMNS: Array<string> = ['amount',
   'description',
@@ -65,6 +67,7 @@ export class RecurringDebtComponent implements OnInit {
 
   constructor(
     private service: RecurringDebtService,
+    private debtService: DebtsService,
     private notification: NotificationsComponent,
     private dialog: MatDialog,
     private formBuilder: FormBuilder
@@ -106,6 +109,41 @@ export class RecurringDebtComponent implements OnInit {
         this.service.delete(id)
           .subscribe(resp => {
             this.notification.showNotification('Succesfully deleted!', resp.status);
+            if (resp.status >= 200 && resp.status < 400) {
+              setTimeout(() => {
+                this.getRecurringDebts()
+              }, 100)
+            }
+          });
+      }
+    });
+  }
+
+  createDebt(recurring: RecurringDebt): void {
+
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+      data: {
+        title: "Create Debt",
+        message: "Create this debt for the next month?"
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        let debt = {
+          amount: recurring.amount,
+          description: recurring.description,
+          installments: 1,
+          next_month: 'true',
+          debt_date: moment(new Date()).format('YYYY-MM-DD'),
+          type: recurring.type,
+          tag: recurring.tag,
+        }
+
+        this.debtService.create(debt)
+          .subscribe(resp => {
+            this.notification.showNotification('Debt succesfully created!', resp.status);
             if (resp.status >= 200 && resp.status < 400) {
               setTimeout(() => {
                 this.getRecurringDebts()

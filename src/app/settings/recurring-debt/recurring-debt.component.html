@@ -108,6 +108,11 @@
               <ng-container matColumnDef="actions">
                 <mat-header-cell *matHeaderCellDef> <strong>Actions </strong></mat-header-cell>
                 <mat-cell *matCellDef="let element">
+                  <button mat-icon-button title="CreateDebt" 
+                          matTooltip="Create Debt" 
+                          (click)="createDebt(element)">
+                          <i class="material-icons">playlist_add</i>
+                  </button>
                   <button mat-icon-button title="Delete" 
                           matTooltip="Delete" 
                           (click)="delete(element.recurring_debt_id)">
